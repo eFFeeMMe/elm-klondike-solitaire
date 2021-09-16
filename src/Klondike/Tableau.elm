@@ -3,11 +3,13 @@ module Klondike.Tableau exposing
     , getCards
     , head
     , isCardAppendable
-    , pick
+    , pickHead
     , place
+    , splitAt
     )
 
 import Card exposing (Card(..), Color(..), Figure(..))
+import List.Extra
 
 
 type Tableau
@@ -17,8 +19,8 @@ type Tableau
         }
 
 
-pick : Tableau -> ( Tableau, Maybe Card )
-pick ((Tableau ({ cards } as tableauStackRecord)) as tableauStack) =
+pickHead : Tableau -> ( Tableau, Maybe Card )
+pickHead ((Tableau ({ cards } as tableauStackRecord)) as tableauStack) =
     case cards of
         card :: remaining ->
             ( Tableau { tableauStackRecord | cards = remaining }, Just card )
@@ -27,14 +29,40 @@ pick ((Tableau ({ cards } as tableauStackRecord)) as tableauStack) =
             ( tableauStack, Nothing )
 
 
+{-| Picks a stack of cards from the Tableau, starting from the requested card
+
+Example
+pickFromCard (C2) Tableau {cards = [C1, C2, C3]}
+returns:
+(Tableau {cards = [C3]}, [C1, C2])
+
+-}
+splitAt : Card -> Tableau -> ( Tableau, List Card )
+splitAt from (Tableau { cards, showFrom }) =
+    let
+        splitIndex =
+            cards
+                |> List.Extra.elemIndex from
+                |> Maybe.withDefault (List.length cards)
+                |> (+) 1
+    in
+    cards
+        |> List.Extra.splitAt splitIndex
+        |> (\( left, right ) ->
+                ( Tableau { cards = right, showFrom = showFrom }
+                , left
+                )
+           )
+
+
 head : Tableau -> Maybe Card
 head (Tableau { cards }) =
     List.head cards
 
 
 place : Tableau -> List Card -> Tableau
-place (Tableau tableauStack) card =
-    Tableau { tableauStack | cards = card ++ tableauStack.cards }
+place (Tableau tableauStack) cards =
+    Tableau { tableauStack | cards = cards ++ tableauStack.cards }
 
 
 getCards : Tableau -> List Card

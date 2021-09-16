@@ -216,20 +216,51 @@ toKindView (Card kind _) =
 view : Card -> Html msg
 view card =
     div
-        [ style "border" "solid 1px black"
+        [ style "background" "white"
+        , style "border" "solid 1px black"
         , style "border-radius" "3px"
-        , style "width" "3rem"
-        , style "height" "4rem"
-        , style "padding" "0.2rem"
+        , style "width" "4rem"
+        , style "height" "5.5rem"
+        , style "padding" "0.1rem"
         , style "margin" "0.2rem"
+        , style "font-size" "0.75rem"
         ]
-        [ span
-            []
-            [ card |> toKindView
+        [ div
+            [ style "display" "flex"
+            , style "flex-direction" "column"
+            , style "height" "100%"
             ]
-        , span
-            []
-            [ text (card |> toValueString)
+            [ div
+                [ style "display" "flex"
+                , style "justify-content" "start"
+                ]
+                [ div []
+                    [ text (card |> toValueString)
+                    , br [] []
+                    , card |> toKindView
+                    ]
+                ]
+            , div
+                [ style "display" "flex"
+                , style "justify-content" "center"
+                , style "flex-grow" "1"
+                , style "align-items" "center"
+                , style "font-size" "1.5rem"
+                ]
+                [ text (card |> toValueString)
+                ]
+            , div
+                [ style "display" "flex"
+                , style "justify-content" "end"
+                ]
+                [ div
+                    [ style "transform" "rotate(180deg)"
+                    ]
+                    [ text (card |> toValueString)
+                    , br [] []
+                    , card |> toKindView
+                    ]
+                ]
             ]
         ]
 

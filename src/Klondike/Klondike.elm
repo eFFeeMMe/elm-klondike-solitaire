@@ -341,9 +341,13 @@ clickTableau position tableau card model =
     in
     case model.interaction of
         NotDragging ->
+            let
+                ( newTableau, grabbedCards ) =
+                    Tableau.splitAt card tableau
+            in
             model
-                |> setInteraction (DraggingCardsFrom position (Card.keepFrom card cardsInTableau))
-                |> setTableauByPosition position (Tableau { cards = Card.keepUntil card cardsInTableau, showFrom = 0 })
+                |> setInteraction (DraggingCardsFrom position grabbedCards)
+                |> setTableauByPosition position newTableau
 
         DraggingCardFrom _ card_ ->
             if Tableau.isCardAppendable tableau card_ then
@@ -460,19 +464,25 @@ viewTableau msgTagger position ((Tableau { cards }) as tableau) =
     div
         [ style "display" "flex"
         , style "flex-direction" "column"
+        , style "margin-top" "2rem"
         ]
         (cards
             |> List.reverse
-            |> List.map (viewTableauCard msgTagger position tableau)
+            |> List.indexedMap (\i card -> viewTableauCard msgTagger position tableau card i)
         )
 
 
-viewTableauCard : (Msg -> msg) -> Position -> Tableau -> Card -> Html msg
-viewTableauCard msgTagger position tableau card =
+viewTableauCard : (Msg -> msg) -> Position -> Tableau -> Card -> Int -> Html msg
+viewTableauCard msgTagger position tableau card i =
     div
-        [ onClick (msgTagger (ClickedTableau position tableau card)) ]
-        [ Card.view card ]
+        [ onClick (msgTagger (ClickedTableau position tableau card))
+        , style "margin-top" "-4rem"
+        , style "z-index" (String.fromInt i)
+        ]
+        [ Card.view card
+        ]
 
 
 
 -- TODO: https://stackoverflow.com/questions/40311601/elm-live-unable-to-use-custom-html-to-reference-css-file
+-- TODO: fix keepFrom/Until usages
