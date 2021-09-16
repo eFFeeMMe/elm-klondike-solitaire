@@ -12,6 +12,10 @@ import Card exposing (Card(..), Color(..), Figure(..))
 import List.Extra
 
 
+
+--@TODO: drop the "showFrom" crap and actually have a list of hidden cards
+
+
 type Tableau
     = Tableau
         { cards : List Card

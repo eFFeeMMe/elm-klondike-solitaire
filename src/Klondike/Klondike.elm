@@ -277,7 +277,7 @@ undoDragging model =
         DraggingCardsFrom position cards ->
             model
                 |> (\m -> { m | interaction = NotDragging })
-                |> (\m -> placeCards m position cards)
+                |> (\m -> placeCards m position (List.reverse cards))
 
 
 clickStock : Model -> Model
