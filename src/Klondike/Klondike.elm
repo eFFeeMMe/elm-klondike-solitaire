@@ -308,7 +308,10 @@ clickStock model =
                     }
 
                 [] ->
-                    model
+                    { model
+                        | stock = Stock (Waste.getCards model.waste)
+                        , waste = Waste []
+                    }
 
         DraggingCardFrom fromPosition card ->
             case fromPosition of
