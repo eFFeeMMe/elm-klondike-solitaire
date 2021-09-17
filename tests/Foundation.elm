@@ -1,6 +1,6 @@
 module Foundation exposing (place)
 
-import Commons exposing (c1, c2, c3, c4, c5, c6, foundation1, h4)
+import Commons exposing (c1, c6, foundation1, h4)
 import Expect
 import Klondike.Foundation as Foundation exposing (Foundation(..))
 import Test exposing (..)

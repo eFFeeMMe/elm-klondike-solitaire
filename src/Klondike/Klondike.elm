@@ -59,7 +59,7 @@ type Position
 type Msg
     = ClickedStock
     | ClickedWaste
-    | ClickedTableau Position Tableau Card
+    | ClickedTableau Position Tableau (Maybe Card)
     | ClickedFoundation Position Foundation
 
 
@@ -349,17 +349,22 @@ clickWaste model =
             model
 
 
-clickTableau : Position -> Tableau -> Card -> Model -> Model
+clickTableau : Position -> Tableau -> Maybe Card -> Model -> Model
 clickTableau position tableau card model =
     case model.interaction of
         NotDragging ->
-            let
-                ( newTableau, grabbedCards ) =
-                    Tableau.splitAt card tableau
-            in
-            model
-                |> setInteraction (DraggingCardsFrom position grabbedCards)
-                |> setTableauByPosition position newTableau
+            case card of
+                Nothing ->
+                    model
+
+                Just card_ ->
+                    let
+                        ( newTableau, grabbedCards ) =
+                            Tableau.splitAt card_ tableau
+                    in
+                    model
+                        |> setInteraction (DraggingCardsFrom position grabbedCards)
+                        |> setTableauByPosition position newTableau
 
         DraggingCardFrom _ card_ ->
             case Tableau.place tableau [ card_ ] of
@@ -504,11 +509,15 @@ viewStock { stock, interaction } =
 
 viewWaste : Model -> Html msg
 viewWaste { waste } =
-    waste
-        |> Waste.wasteTopCard
-        |> Maybe.map Card.view
-        |> Maybe.withDefault
-            Card.viewEmpty
+    div
+        [ style "margin-right" "2rem"
+        ]
+        [ waste
+            |> Waste.wasteTopCard
+            |> Maybe.map Card.view
+            |> Maybe.withDefault
+                Card.viewEmpty
+        ]
 
 
 viewFoundation : (Msg -> msg) -> Position -> Foundation -> Html msg
@@ -525,21 +534,33 @@ viewFoundation msgTagger position foundation =
 
 viewTableau : (Msg -> msg) -> Position -> Tableau -> Html msg
 viewTableau msgTagger position ((Tableau { cards }) as tableau) =
-    div
-        [ style "display" "flex"
-        , style "flex-direction" "column"
-        , style "margin-top" "2rem"
-        ]
-        (cards
-            |> List.reverse
-            |> List.indexedMap (\i card -> viewTableauCard msgTagger position tableau card i)
-        )
+    case cards of
+        [] ->
+            div
+                [ onClick (msgTagger (ClickedTableau position tableau Nothing))
+                ]
+                [ Card.viewEmpty
+                ]
+
+        _ ->
+            div
+                [ style "display" "flex"
+                , style "flex-direction" "column"
+                , style "margin-top" "2rem"
+                ]
+                (cards
+                    |> List.reverse
+                    |> List.indexedMap
+                        (\i card ->
+                            viewTableauCard msgTagger position tableau card i
+                        )
+                )
 
 
 viewTableauCard : (Msg -> msg) -> Position -> Tableau -> Card -> Int -> Html msg
 viewTableauCard msgTagger position tableau card i =
     div
-        [ onClick (msgTagger (ClickedTableau position tableau card))
+        [ onClick (msgTagger (ClickedTableau position tableau (Just card)))
         , style "margin-top" "-4rem"
         , style "z-index" (String.fromInt i)
         ]

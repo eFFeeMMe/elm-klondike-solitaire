@@ -161,14 +161,14 @@ tableauCardPlaceabilityRule to ((Card _ figure) as card) =
             False
 
 
-{-| You can place to an empty Tableau.
+{-| You can place Kings onto an empty Tableau.
 -}
 isCardPlaceable : Tableau -> Card -> Bool
-isCardPlaceable tableau card =
+isCardPlaceable tableau ((Card _ figure) as card) =
     tableau
         |> head
         |> Maybe.map (\tableauHead -> tableauCardPlaceabilityRule tableauHead card)
-        |> Maybe.withDefault True
+        |> Maybe.withDefault (figure == King)
 
 
 areCardsPlaceable : Tableau -> List Card -> Bool
