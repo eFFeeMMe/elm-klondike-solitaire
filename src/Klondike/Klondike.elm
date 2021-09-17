@@ -453,14 +453,10 @@ view msgTagger model =
             []
             [ div
                 [ style "display" "flex"
-                , style "margin-bottom" "50px"
+                , style "margin-bottom" "1rem"
                 ]
-                [ div
-                    [ onClick (msgTagger ClickedStock) ]
-                    [ viewStock model ]
-                , div
-                    [ onClick (msgTagger ClickedWaste) ]
-                    [ viewWaste model ]
+                [ viewStock msgTagger model
+                , viewWaste msgTagger model
                 , viewFoundation msgTagger PFoundation1 model.foundation1
                 , viewFoundation msgTagger PFoundation2 model.foundation2
                 , viewFoundation msgTagger PFoundation3 model.foundation3
@@ -481,36 +477,41 @@ view msgTagger model =
         ]
 
 
-viewStock : Model -> Html msg
-viewStock { stock, interaction } =
-    case interaction of
-        NotDragging ->
-            case Stock.head stock of
-                Just card ->
-                    Card.view card
-
-                Nothing ->
-                    Card.viewEmpty
-
-        DraggingCardFrom PStock _ ->
-            Card.viewHidden
-
-        DraggingCardsFrom PStock _ ->
-            Card.viewHidden
-
-        _ ->
-            case Stock.head stock of
-                Just card ->
-                    Card.view card
-
-                Nothing ->
-                    Card.viewEmpty
-
-
-viewWaste : Model -> Html msg
-viewWaste { waste } =
+viewStock : (Msg -> msg) -> Model -> Html msg
+viewStock msgTagger { stock, interaction } =
     div
-        [ style "margin-right" "2rem"
+        [ onClick (msgTagger ClickedStock)
+        ]
+        [ case interaction of
+            NotDragging ->
+                case Stock.head stock of
+                    Just card ->
+                        Card.view card
+
+                    Nothing ->
+                        Card.viewEmpty
+
+            DraggingCardFrom PStock _ ->
+                Card.viewHidden
+
+            DraggingCardsFrom PStock _ ->
+                Card.viewHidden
+
+            _ ->
+                case Stock.head stock of
+                    Just card ->
+                        Card.view card
+
+                    Nothing ->
+                        Card.viewEmpty
+        ]
+
+
+viewWaste : (Msg -> msg) -> Model -> Html msg
+viewWaste msgTagger { waste } =
+    div
+        [ onClick (msgTagger ClickedWaste)
+        , style "margin-right" "1rem"
         ]
         [ waste
             |> Waste.wasteTopCard
@@ -546,7 +547,7 @@ viewTableau msgTagger position ((Tableau { cards }) as tableau) =
             div
                 [ style "display" "flex"
                 , style "flex-direction" "column"
-                , style "margin-top" "2rem"
+                , style "margin-top" "4rem"
                 ]
                 (cards
                     |> List.reverse
