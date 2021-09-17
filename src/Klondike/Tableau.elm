@@ -1,5 +1,7 @@
 module Klondike.Tableau exposing
     ( Tableau(..)
+    , areCardsAppendable
+    , forcePlace
     , getCards
     , head
     , isCardAppendable
@@ -64,9 +66,25 @@ head (Tableau { cards }) =
     List.head cards
 
 
-place : Tableau -> List Card -> Tableau
-place (Tableau tableauStack) cards =
-    Tableau { tableauStack | cards = cards ++ tableauStack.cards }
+{-| Place a List Card onto the Tableau without caring for the rules
+-}
+forcePlace : Tableau -> List Card -> Tableau
+forcePlace (Tableau tableauRecord) cards =
+    Tableau { tableauRecord | cards = cards ++ tableauRecord.cards }
+
+
+{-| Place a List Card onto the Tableau.
+
+Returns Nothing when the move is illegal.
+
+-}
+place : Tableau -> List Card -> Maybe Tableau
+place tableau cards =
+    if areCardsAppendable tableau cards then
+        Just (forcePlace tableau cards)
+
+    else
+        Nothing
 
 
 getCards : Tableau -> List Card
@@ -143,11 +161,19 @@ tableauCardAppendabilityRule to ((Card _ figure) as card) =
             False
 
 
+{-| You can append to an empty Tableau.
+-}
 isCardAppendable : Tableau -> Card -> Bool
 isCardAppendable tableau card =
-    case head tableau of
-        Just tableauHead ->
-            tableauCardAppendabilityRule tableauHead card
+    tableau
+        |> head
+        |> Maybe.map (\tableauHead -> tableauCardAppendabilityRule tableauHead card)
+        |> Maybe.withDefault True
 
-        Nothing ->
-            False
+
+areCardsAppendable : Tableau -> List Card -> Bool
+areCardsAppendable tableau cards =
+    cards
+        |> List.Extra.last
+        |> Maybe.map (isCardAppendable tableau)
+        |> Maybe.withDefault False

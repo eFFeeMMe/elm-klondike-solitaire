@@ -230,25 +230,25 @@ placeCard model position card =
             { model | foundation4 = Foundation.place model.foundation4 card }
 
         PTableau1 ->
-            { model | tableau1 = Tableau.place model.tableau1 [ card ] }
+            { model | tableau1 = Tableau.forcePlace model.tableau1 [ card ] }
 
         PTableau2 ->
-            { model | tableau2 = Tableau.place model.tableau2 [ card ] }
+            { model | tableau2 = Tableau.forcePlace model.tableau2 [ card ] }
 
         PTableau3 ->
-            { model | tableau3 = Tableau.place model.tableau3 [ card ] }
+            { model | tableau3 = Tableau.forcePlace model.tableau3 [ card ] }
 
         PTableau4 ->
-            { model | tableau4 = Tableau.place model.tableau4 [ card ] }
+            { model | tableau4 = Tableau.forcePlace model.tableau4 [ card ] }
 
         PTableau5 ->
-            { model | tableau5 = Tableau.place model.tableau5 [ card ] }
+            { model | tableau5 = Tableau.forcePlace model.tableau5 [ card ] }
 
         PTableau6 ->
-            { model | tableau6 = Tableau.place model.tableau6 [ card ] }
+            { model | tableau6 = Tableau.forcePlace model.tableau6 [ card ] }
 
         PTableau7 ->
-            { model | tableau7 = Tableau.place model.tableau7 [ card ] }
+            { model | tableau7 = Tableau.forcePlace model.tableau7 [ card ] }
 
 
 placeCards : Model -> Position -> List Card -> Model
@@ -350,16 +350,24 @@ clickTableau position tableau card model =
                 |> setTableauByPosition position newTableau
 
         DraggingCardFrom _ card_ ->
-            if Tableau.isCardAppendable tableau card_ then
-                model
-                    |> setInteraction NotDragging
-                    |> setTableauByPosition position (Tableau { cards = card_ :: cardsInTableau, showFrom = 0 })
+            case Tableau.place tableau [ card_ ] of
+                Just tableau_ ->
+                    model
+                        |> setInteraction NotDragging
+                        |> setTableauByPosition position tableau_
 
-            else
-                undoDragging model
+                Nothing ->
+                    undoDragging model
 
-        DraggingCardsFrom fromWhere cards ->
-            model
+        DraggingCardsFrom _ cards ->
+            case Tableau.place tableau cards of
+                Just tableau_ ->
+                    model
+                        |> setInteraction NotDragging
+                        |> setTableauByPosition position tableau_
+
+                Nothing ->
+                    undoDragging model
 
 
 view : (Msg -> msg) -> Model -> Html msg
