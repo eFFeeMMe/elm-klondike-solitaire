@@ -1,42 +1,12 @@
-module Example exposing
-    ( listExtra
-    , place
+module Tableau exposing
+    ( place
     , splitAt
     )
 
-import Card
+import Commons exposing (c2, c3, c4, c5, c6, h4, tableau1)
 import Expect
 import Klondike.Tableau as Tableau exposing (Tableau(..))
-import List.Extra
 import Test exposing (..)
-
-
-c2 =
-    Card.Card Card.Clubs Card.Two
-
-
-c3 =
-    Card.Card Card.Clubs Card.Three
-
-
-c4 =
-    Card.Card Card.Clubs Card.Four
-
-
-c5 =
-    Card.Card Card.Clubs Card.Five
-
-
-c6 =
-    Card.Card Card.Clubs Card.Six
-
-
-h4 =
-    Card.Card Card.Hearts Card.Four
-
-
-tableau1 =
-    Tableau.Tableau { cards = [ c5, c4, c3, c2 ], showFrom = 0 }
 
 
 splitAt : Test
@@ -77,22 +47,4 @@ place =
             \_ ->
                 Tableau.place tableau1 [ h4 ]
                     |> Expect.equal (Just (Tableau.forcePlace tableau1 [ h4 ]))
-        ]
-
-
-{-| This is just here as a reminder of how to use List.Extra functions
--}
-listExtra : Test
-listExtra =
-    describe "List.Extra functions"
-        [ test "I needed an example to see how List.Extra.splitWhen works :<" <|
-            \_ ->
-                Expect.equal
-                    (List.Extra.splitWhen ((==) 3) [ 2, 3, 4 ])
-                    (Just ( [ 2 ], [ 3, 4 ] ))
-        , test "I needed an example to see how List.Extra.splitAt works :<" <|
-            \_ ->
-                Expect.equal
-                    (List.Extra.splitAt 2 [ 2, 3, 4 ])
-                    ( [ 2, 3 ], [ 4 ] )
         ]

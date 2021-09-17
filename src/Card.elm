@@ -10,8 +10,10 @@ module Card exposing
     , keepFrom
     , keepUntil
     , toColor
+    , toFigure
     , toKindString
     , toKindView
+    , toSuit
     , toValueString
     , view
     , viewEmpty
@@ -197,20 +199,18 @@ toKindString (Card kind _) =
             "♠"
 
 
-toKindView : Card -> Html msg
-toKindView (Card kind _) =
-    case kind of
-        Clubs ->
-            span [ style "color" "black" ] [ text "♣" ]
+toSuit : Card -> Suit
+toSuit (Card suit _) =
+    suit
 
-        Diamonds ->
-            span [ style "color" "red" ] [ text "♦" ]
 
-        Hearts ->
-            span [ style "color" "red" ] [ text "♥" ]
+toFigure : Card -> Figure
+toFigure (Card _ figure) =
+    figure
 
-        Spades ->
-            span [ style "color" "black" ] [ text "♠" ]
+
+
+-- VIEW --
 
 
 view : Card -> Html msg
@@ -263,6 +263,22 @@ view card =
                 ]
             ]
         ]
+
+
+toKindView : Card -> Html msg
+toKindView (Card kind _) =
+    case kind of
+        Clubs ->
+            span [ style "color" "black" ] [ text "♣" ]
+
+        Diamonds ->
+            span [ style "color" "red" ] [ text "♦" ]
+
+        Hearts ->
+            span [ style "color" "red" ] [ text "♥" ]
+
+        Spades ->
+            span [ style "color" "black" ] [ text "♠" ]
 
 
 viewHidden : Html msg

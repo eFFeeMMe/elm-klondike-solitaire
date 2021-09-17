@@ -1,10 +1,10 @@
 module Klondike.Tableau exposing
     ( Tableau(..)
-    , areCardsAppendable
+    , areCardsPlaceable
     , forcePlace
     , getCards
     , head
-    , isCardAppendable
+    , isCardPlaceable
     , pickHead
     , place
     , splitAt
@@ -80,7 +80,7 @@ Returns Nothing when the move is illegal.
 -}
 place : Tableau -> List Card -> Maybe Tableau
 place tableau cards =
-    if areCardsAppendable tableau cards then
+    if areCardsPlaceable tableau cards then
         Just (forcePlace tableau cards)
 
     else
@@ -92,8 +92,8 @@ getCards (Tableau { cards }) =
     cards
 
 
-appendableFigure : Card -> Maybe Figure
-appendableFigure (Card _ figure) =
+placeableFigure : Card -> Maybe Figure
+placeableFigure (Card _ figure) =
     case figure of
         King ->
             Just Queen
@@ -135,8 +135,8 @@ appendableFigure (Card _ figure) =
             Nothing
 
 
-appendableColor : Card -> Color
-appendableColor card =
+placeableColor : Card -> Color
+placeableColor card =
     case Card.toColor card of
         Card.Black ->
             Card.Red
@@ -145,15 +145,15 @@ appendableColor card =
             Card.Black
 
 
-tableauCardAppendabilityRequirements : Card -> Maybe ( Figure, Color )
-tableauCardAppendabilityRequirements card =
-    appendableFigure card
-        |> Maybe.map (\figure -> ( figure, appendableColor card ))
+tableauCardPlaceabilityRequirements : Card -> Maybe ( Figure, Color )
+tableauCardPlaceabilityRequirements card =
+    placeableFigure card
+        |> Maybe.map (\figure -> ( figure, placeableColor card ))
 
 
-tableauCardAppendabilityRule : Card -> Card -> Bool
-tableauCardAppendabilityRule to ((Card _ figure) as card) =
-    case tableauCardAppendabilityRequirements to of
+tableauCardPlaceabilityRule : Card -> Card -> Bool
+tableauCardPlaceabilityRule to ((Card _ figure) as card) =
+    case tableauCardPlaceabilityRequirements to of
         Just ( requiredFigure, requiredColor ) ->
             Card.toColor card == requiredColor && figure == requiredFigure
 
@@ -161,19 +161,19 @@ tableauCardAppendabilityRule to ((Card _ figure) as card) =
             False
 
 
-{-| You can append to an empty Tableau.
+{-| You can place to an empty Tableau.
 -}
-isCardAppendable : Tableau -> Card -> Bool
-isCardAppendable tableau card =
+isCardPlaceable : Tableau -> Card -> Bool
+isCardPlaceable tableau card =
     tableau
         |> head
-        |> Maybe.map (\tableauHead -> tableauCardAppendabilityRule tableauHead card)
+        |> Maybe.map (\tableauHead -> tableauCardPlaceabilityRule tableauHead card)
         |> Maybe.withDefault True
 
 
-areCardsAppendable : Tableau -> List Card -> Bool
-areCardsAppendable tableau cards =
+areCardsPlaceable : Tableau -> List Card -> Bool
+areCardsPlaceable tableau cards =
     cards
         |> List.Extra.last
-        |> Maybe.map (isCardAppendable tableau)
+        |> Maybe.map (isCardPlaceable tableau)
         |> Maybe.withDefault False

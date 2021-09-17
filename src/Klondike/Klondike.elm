@@ -13,14 +13,7 @@ import Html.Events exposing (..)
 import Klondike.Foundation as Foundation exposing (Foundation(..))
 import Klondike.Stock as Stock exposing (Stock(..))
 import Klondike.Tableau as Tableau exposing (Tableau(..))
-import Klondike.Waste
-    exposing
-        ( Waste(..)
-        , wasteCards
-        , wastePick
-        , wastePlace
-        , wasteTopCard
-        )
+import Klondike.Waste as Waste exposing (Waste(..))
 
 
 type alias Model =
@@ -141,7 +134,7 @@ initPlaceCard model position =
     in
     case card of
         Just card_ ->
-            placeCard { model | stock = stock } position card_
+            forcePlaceCard { model | stock = stock } position card_
 
         Nothing ->
             model
@@ -208,26 +201,26 @@ getTableauByPosition position model =
             Nothing
 
 
-placeCard : Model -> Position -> Card -> Model
-placeCard model position card =
+forcePlaceCard : Model -> Position -> Card -> Model
+forcePlaceCard model position card =
     case position of
         PStock ->
-            model
+            { model | stock = Stock.place model.stock card }
 
         PWaste ->
-            { model | waste = wastePlace model.waste card }
+            { model | waste = Waste.place model.waste card }
 
         PFoundation1 ->
-            { model | foundation1 = Foundation.place model.foundation1 card }
+            { model | foundation1 = Foundation.forcePlace model.foundation1 card }
 
         PFoundation2 ->
-            { model | foundation2 = Foundation.place model.foundation2 card }
+            { model | foundation2 = Foundation.forcePlace model.foundation2 card }
 
         PFoundation3 ->
-            { model | foundation3 = Foundation.place model.foundation3 card }
+            { model | foundation3 = Foundation.forcePlace model.foundation3 card }
 
         PFoundation4 ->
-            { model | foundation4 = Foundation.place model.foundation4 card }
+            { model | foundation4 = Foundation.forcePlace model.foundation4 card }
 
         PTableau1 ->
             { model | tableau1 = Tableau.forcePlace model.tableau1 [ card ] }
@@ -256,7 +249,7 @@ placeCards model position cards =
     case cards of
         card :: tailCards ->
             model
-                |> (\m -> placeCard m position card)
+                |> (\m -> forcePlaceCard m position card)
                 |> (\m -> placeCards m position tailCards)
 
         [] ->
@@ -272,7 +265,7 @@ undoDragging model =
         DraggingCardFrom position card ->
             model
                 |> (\m -> { m | interaction = NotDragging })
-                |> (\m -> placeCard m position card)
+                |> (\m -> forcePlaceCard m position card)
 
         DraggingCardsFrom position cards ->
             model
@@ -313,7 +306,7 @@ clickWaste : Model -> Model
 clickWaste model =
     case model.interaction of
         NotDragging ->
-            case wasteCards model.waste of
+            case Waste.getCards model.waste of
                 card :: cards ->
                     { model
                         | interaction = DraggingCardFrom PWaste card
@@ -326,7 +319,7 @@ clickWaste model =
         DraggingCardFrom _ card ->
             { model
                 | interaction = NotDragging
-                , waste = wastePlace model.waste card
+                , waste = Waste.place model.waste card
             }
 
         DraggingCardsFrom _ _ ->
@@ -335,10 +328,6 @@ clickWaste model =
 
 clickTableau : Position -> Tableau -> Card -> Model -> Model
 clickTableau position tableau card model =
-    let
-        cardsInTableau =
-            Tableau.getCards tableau
-    in
     case model.interaction of
         NotDragging ->
             let
@@ -382,7 +371,7 @@ view msgTagger model =
             [ text
                 ("# of cards: "
                     ++ (((model.stock |> Stock.getCards |> List.length)
-                            + (model.waste |> wasteCards |> List.length)
+                            + (model.waste |> Waste.getCards |> List.length)
                         )
                             |> String.fromInt
                        )
@@ -449,7 +438,7 @@ viewStock { stock, interaction } =
 
 viewWaste : Model -> Html msg
 viewWaste { waste } =
-    case wasteTopCard waste of
+    case Waste.wasteTopCard waste of
         Just card ->
             Card.view card
 
