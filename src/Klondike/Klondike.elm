@@ -60,6 +60,7 @@ type Msg
     = ClickedStock
     | ClickedWaste
     | ClickedTableau Position Tableau Card
+    | ClickedFoundation Position
 
 
 update : Model -> Msg -> Model
@@ -70,6 +71,9 @@ update model msg =
 
         ClickedWaste ->
             clickWaste model
+
+        ClickedFoundation position ->
+            clickFoundation position model
 
         ClickedTableau position tableau card ->
             clickTableau position tableau card model
@@ -244,13 +248,13 @@ forcePlaceCard model position card =
             { model | tableau7 = Tableau.forcePlace model.tableau7 [ card ] }
 
 
-placeCards : Model -> Position -> List Card -> Model
-placeCards model position cards =
+forcePlaceCards : Model -> Position -> List Card -> Model
+forcePlaceCards model position cards =
     case cards of
         card :: tailCards ->
             model
                 |> (\m -> forcePlaceCard m position card)
-                |> (\m -> placeCards m position tailCards)
+                |> (\m -> forcePlaceCards m position tailCards)
 
         [] ->
             model
@@ -270,7 +274,7 @@ undoDragging model =
         DraggingCardsFrom position cards ->
             model
                 |> (\m -> { m | interaction = NotDragging })
-                |> (\m -> placeCards m position (List.reverse cards))
+                |> (\m -> forcePlaceCards m position (List.reverse cards))
 
 
 clickStock : Model -> Model
@@ -354,6 +358,39 @@ clickTableau position tableau card model =
                     model
                         |> setInteraction NotDragging
                         |> setTableauByPosition position tableau_
+
+                Nothing ->
+                    undoDragging model
+
+
+clickFoundation : Position -> Foundation -> Card -> Model -> Model
+clickFoundation position tableau card model =
+    case model.interaction of
+        NotDragging ->
+            let
+                ( newFoundation, grabbedCards ) =
+                    Foundation.splitAt card tableau
+            in
+            model
+                |> setInteraction (DraggingCardsFrom position grabbedCards)
+                |> setFoundationByPosition position newFoundation
+
+        DraggingCardFrom _ card_ ->
+            case Foundation.place tableau [ card_ ] of
+                Just tableau_ ->
+                    model
+                        |> setInteraction NotDragging
+                        |> setFoundationByPosition position tableau_
+
+                Nothing ->
+                    undoDragging model
+
+        DraggingCardsFrom _ cards ->
+            case Foundation.place tableau cards of
+                Just tableau_ ->
+                    model
+                        |> setInteraction NotDragging
+                        |> setFoundationByPosition position tableau_
 
                 Nothing ->
                     undoDragging model
