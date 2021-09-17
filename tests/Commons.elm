@@ -5,6 +5,11 @@ import Klondike.Foundation as Foundation
 import Klondike.Tableau as Tableau
 
 
+c1 : Card.Card
+c1 =
+    Card.Card Card.Clubs Card.Ace
+
+
 c2 : Card.Card
 c2 =
     Card.Card Card.Clubs Card.Two
@@ -42,4 +47,4 @@ tableau1 =
 
 foundation1 : Foundation.Foundation
 foundation1 =
-    Foundation.Foundation [ c3, c4, c5 ]
+    Foundation.Foundation [ c5, c4, c3 ]

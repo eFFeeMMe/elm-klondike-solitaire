@@ -60,7 +60,7 @@ type Msg
     = ClickedStock
     | ClickedWaste
     | ClickedTableau Position Tableau Card
-    | ClickedFoundation Position
+    | ClickedFoundation Position Foundation
 
 
 update : Model -> Msg -> Model
@@ -72,8 +72,8 @@ update model msg =
         ClickedWaste ->
             clickWaste model
 
-        ClickedFoundation position ->
-            clickFoundation position model
+        ClickedFoundation position foundation ->
+            clickFoundation position foundation model
 
         ClickedTableau position tableau card ->
             clickTableau position tableau card model
@@ -172,6 +172,25 @@ setTableauByPosition position tableau model =
 
         PTableau7 ->
             { model | tableau7 = tableau }
+
+        _ ->
+            model
+
+
+setFoundationByPosition : Position -> Foundation -> Model -> Model
+setFoundationByPosition position foundation model =
+    case position of
+        PFoundation1 ->
+            { model | foundation1 = foundation }
+
+        PFoundation2 ->
+            { model | foundation2 = foundation }
+
+        PFoundation3 ->
+            { model | foundation3 = foundation }
+
+        PFoundation4 ->
+            { model | foundation4 = foundation }
 
         _ ->
             model
@@ -363,20 +382,25 @@ clickTableau position tableau card model =
                     undoDragging model
 
 
-clickFoundation : Position -> Foundation -> Card -> Model -> Model
-clickFoundation position tableau card model =
+clickFoundation : Position -> Foundation -> Model -> Model
+clickFoundation position foundation model =
     case model.interaction of
         NotDragging ->
             let
-                ( newFoundation, grabbedCards ) =
-                    Foundation.splitAt card tableau
+                ( newFoundation, grabbedCard ) =
+                    Foundation.pick foundation
             in
-            model
-                |> setInteraction (DraggingCardsFrom position grabbedCards)
-                |> setFoundationByPosition position newFoundation
+            case grabbedCard of
+                Just grabbedCard_ ->
+                    model
+                        |> setInteraction (DraggingCardFrom position grabbedCard_)
+                        |> setFoundationByPosition position newFoundation
+
+                Nothing ->
+                    model
 
         DraggingCardFrom _ card_ ->
-            case Foundation.place tableau [ card_ ] of
+            case Foundation.place foundation card_ of
                 Just tableau_ ->
                     model
                         |> setInteraction NotDragging
@@ -386,13 +410,18 @@ clickFoundation position tableau card model =
                     undoDragging model
 
         DraggingCardsFrom _ cards ->
-            case Foundation.place tableau cards of
-                Just tableau_ ->
-                    model
-                        |> setInteraction NotDragging
-                        |> setFoundationByPosition position tableau_
+            case cards of
+                [ card ] ->
+                    case Foundation.place foundation card of
+                        Just tableau_ ->
+                            model
+                                |> setInteraction NotDragging
+                                |> setFoundationByPosition position tableau_
 
-                Nothing ->
+                        Nothing ->
+                            undoDragging model
+
+                _ ->
                     undoDragging model
 
 
@@ -427,10 +456,10 @@ view msgTagger model =
                 , div
                     [ onClick (msgTagger ClickedWaste) ]
                     [ viewWaste model ]
-                , viewFoundation model.foundation1
-                , viewFoundation model.foundation2
-                , viewFoundation model.foundation3
-                , viewFoundation model.foundation4
+                , viewFoundation msgTagger PFoundation1 model.foundation1
+                , viewFoundation msgTagger PFoundation2 model.foundation2
+                , viewFoundation msgTagger PFoundation3 model.foundation3
+                , viewFoundation msgTagger PFoundation4 model.foundation4
                 ]
             , div
                 [ style "display" "flex"
@@ -475,22 +504,23 @@ viewStock { stock, interaction } =
 
 viewWaste : Model -> Html msg
 viewWaste { waste } =
-    case Waste.wasteTopCard waste of
-        Just card ->
-            Card.view card
-
-        Nothing ->
+    waste
+        |> Waste.wasteTopCard
+        |> Maybe.map Card.view
+        |> Maybe.withDefault
             Card.viewEmpty
 
 
-viewFoundation : Foundation -> Html msg
-viewFoundation (Foundation cards) =
-    case List.head cards of
-        Just card ->
-            Card.view card
-
-        Nothing ->
-            Card.viewEmpty
+viewFoundation : (Msg -> msg) -> Position -> Foundation -> Html msg
+viewFoundation msgTagger position foundation =
+    div
+        [ onClick (msgTagger (ClickedFoundation position foundation))
+        ]
+        [ foundation
+            |> Foundation.head
+            |> Maybe.map Card.view
+            |> Maybe.withDefault Card.viewEmpty
+        ]
 
 
 viewTableau : (Msg -> msg) -> Position -> Tableau -> Html msg

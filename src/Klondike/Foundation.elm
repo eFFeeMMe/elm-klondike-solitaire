@@ -51,15 +51,15 @@ place foundation card =
         Nothing
 
 
-{-| You can place to an empty Foundation.
+{-| You can place aces on an empty Foundation.
 -}
 isCardPlaceable : Foundation -> Card -> Bool
 isCardPlaceable foundation (Card suit figure) =
     case foundation |> head of
         Just fHead ->
             case
-                ( fHead |> Card.toSuit |> isSuitPlaceable suit
-                , fHead |> Card.toFigure |> isFigurePlaceable figure
+                ( isSuitPlaceable fHead suit
+                , isFigurePlaceable fHead figure
                 )
             of
                 ( True, True ) ->
@@ -69,22 +69,20 @@ isCardPlaceable foundation (Card suit figure) =
                     False
 
         Nothing ->
-            True
+            figure == Ace
 
 
-isFigurePlaceable : Card.Figure -> Card.Figure -> Bool
-isFigurePlaceable below above =
-    case placeableFigure below of
-        Just requiredFigure ->
-            requiredFigure == above
-
-        Nothing ->
-            True
+isFigurePlaceable : Card -> Card.Figure -> Bool
+isFigurePlaceable card figure =
+    card
+        |> placeableFigure
+        |> Maybe.map ((==) figure)
+        |> Maybe.withDefault False
 
 
-isSuitPlaceable : Card.Suit -> Card.Suit -> Bool
-isSuitPlaceable =
-    (==)
+isSuitPlaceable : Card -> Card.Suit -> Bool
+isSuitPlaceable (Card suit _) =
+    (==) suit
 
 
 getCards : Foundation -> List Card
@@ -92,9 +90,9 @@ getCards (Foundation cards) =
     cards
 
 
-placeableFigure : Figure -> Maybe Figure
-placeableFigure figure =
-    case figure of
+placeableFigure : Card -> Maybe Figure
+placeableFigure card =
+    case Card.toFigure card of
         King ->
             Nothing
 

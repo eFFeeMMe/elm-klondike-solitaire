@@ -287,10 +287,10 @@ viewHidden =
         [ style "border" "solid 1px black"
         , style "border-radius" "3px"
         , style "background" "beige"
-        , style "width" "3rem"
-        , style "height" "4rem"
-        , style "padding" "0.2rem"
-        , style "margin" "0.2rem"
+        , style "width" "4rem"
+        , style "height" "5.5rem"
+        , style "padding" "0.1rem"
+        , style "margin" "0.1rem"
         ]
         []
 
@@ -298,11 +298,11 @@ viewHidden =
 viewEmpty : Html msg
 viewEmpty =
     div
-        [ style "border" "solid 1px black"
+        [ style "border" "solid 1px lightgrey"
         , style "border-radius" "3px"
-        , style "width" "3rem"
-        , style "height" "4rem"
-        , style "padding" "0.2rem"
-        , style "margin" "0.2rem"
+        , style "width" "4rem"
+        , style "height" "5.5rem"
+        , style "padding" "0.1rem"
+        , style "margin" "0.1rem"
         ]
         []
