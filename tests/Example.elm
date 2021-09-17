@@ -47,7 +47,7 @@ suite =
                 Expect.equal
                     (Tableau.splitAt c6 tableau1)
                     ( tableau1, [] )
-        , test "sassari" <|
+        , test "splitAt + place should return the original tableau" <|
             \_ ->
                 Expect.equal
                     (Tableau.splitAt c3 tableau1

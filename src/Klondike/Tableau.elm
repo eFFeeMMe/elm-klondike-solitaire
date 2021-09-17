@@ -47,7 +47,7 @@ splitAt from (Tableau { cards, showFrom }) =
         splitIndex =
             cards
                 |> List.Extra.elemIndex from
-                |> Maybe.withDefault (List.length cards)
+                |> Maybe.withDefault -1
                 |> (+) 1
     in
     cards
