@@ -216,15 +216,11 @@ toFigure (Card _ figure) =
 view : Card -> Html msg
 view card =
     div
-        [ style "background" "white"
-        , style "border" "solid 1px black"
-        , style "border-radius" "3px"
-        , style "width" "4rem"
-        , style "height" "5.5rem"
-        , style "padding" "0.1rem"
-        , style "margin" "0.2rem"
-        , style "font-size" "0.75rem"
-        ]
+        (commonCardAttributes
+            ++ [ style "background" "white"
+               , style "font-size" "0.75rem"
+               ]
+        )
         [ div
             [ style "display" "flex"
             , style "flex-direction" "column"
@@ -284,25 +280,32 @@ toKindView (Card kind _) =
 viewHidden : Html msg
 viewHidden =
     div
-        [ style "border" "solid 1px black"
-        , style "border-radius" "3px"
-        , style "background" "beige"
-        , style "width" "4rem"
-        , style "height" "5.5rem"
-        , style "padding" "0.1rem"
-        , style "margin" "0.1rem"
-        ]
+        (commonCardAttributes
+            ++ [ style "background" "beige"
+               ]
+        )
         []
 
 
 viewEmpty : Html msg
 viewEmpty =
     div
-        [ style "border" "solid 1px lightgrey"
-        , style "border-radius" "3px"
-        , style "width" "4rem"
-        , style "height" "5.5rem"
-        , style "padding" "0.1rem"
-        , style "margin" "0.1rem"
-        ]
+        (commonCardAttributes
+            ++ [ style "border" "none"
+               , style "box-shadow" "inset 1px 1px rgba(0, 0, 0, 0.02)"
+               , style "background" "rgba(5,3,0,0.03)"
+               ]
+        )
         []
+
+
+commonCardAttributes : List (Html.Attribute msg)
+commonCardAttributes =
+    [ style "border" "solid 1px rgba(5,3,0,0.1)"
+    , style "box-shadow" "0px 1px 2px 0px rgba(0, 0, 0, 0.2)"
+    , style "border-radius" "3px"
+    , style "width" "4rem"
+    , style "height" "5.5rem"
+    , style "padding" "0.1rem"
+    , style "margin" "0.1rem"
+    ]

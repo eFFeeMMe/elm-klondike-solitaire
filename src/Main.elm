@@ -75,15 +75,22 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "Solitaire"
     , body =
+        [ Klondike.view KlondikeMsg model.klondike
+        ]
+    }
+
+
+viewURLStuff : Model -> Html msg
+viewURLStuff model =
+    div
+        []
         [ text "The current URL is: "
         , b [] [ text (Url.toString model.url) ]
         , ul []
             [ viewLink "/home"
             , viewLink "/profile"
             ]
-        , Klondike.view KlondikeMsg model.klondike
         ]
-    }
 
 
 viewLink : String -> Html msg

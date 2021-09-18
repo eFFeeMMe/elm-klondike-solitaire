@@ -436,23 +436,9 @@ clickFoundation position foundation model =
 view : (Msg -> msg) -> Model -> Html msg
 view msgTagger model =
     div
-        []
-        [ span
-            []
-            [ text ("Stock contains: " ++ (model.stock |> Stock.getCards |> List.length |> String.fromInt) ++ " items") ]
-        , span
-            []
-            [ text
-                ("# of cards: "
-                    ++ (((model.stock |> Stock.getCards |> List.length)
-                            + (model.waste |> Waste.getCards |> List.length)
-                        )
-                            |> String.fromInt
-                       )
-                    ++ " items"
-                )
-            ]
-        , div
+        [ style "margin" "1rem"
+        ]
+        [ div
             []
             [ div
                 [ style "display" "flex"
@@ -570,8 +556,3 @@ viewTableauCard msgTagger position tableau card i =
         ]
         [ Card.view card
         ]
-
-
-
--- TODO: https://stackoverflow.com/questions/40311601/elm-live-unable-to-use-custom-html-to-reference-css-file
--- TODO: fix keepFrom/Until usages
