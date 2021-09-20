@@ -8,7 +8,7 @@ System requirements
 
 1. [Install Elm](https://github.com/elm/compiler/blob/master/installers/linux/README.md).
 
-2. Install the rest of the usual suspects: `npm install -g elm elm-test elm-live`
+2. Install the rest of the usual suspects: `npm install -g elm-test elm-live`
 
 Develop (Run using elm-live)
 ----------------------------
