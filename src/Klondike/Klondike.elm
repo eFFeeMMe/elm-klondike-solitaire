@@ -439,6 +439,7 @@ clickFoundation position foundation model =
                     model
                         |> setInteraction NotDragging
                         |> setFoundationByPosition position tableau_
+                        |> uncoverTableaus
 
                 Nothing ->
                     undoDragging model
@@ -451,6 +452,7 @@ clickFoundation position foundation model =
                             model
                                 |> setInteraction NotDragging
                                 |> setFoundationByPosition position tableau_
+                                |> uncoverTableaus
 
                         Nothing ->
                             undoDragging model
@@ -574,7 +576,7 @@ viewTableau msgTagger position ((Tableau { cards, hiddenCards }) as tableau) =
                 ]
                 (List.concat
                     [ hiddenCards
-                        |> List.map (always viewHiddenTableauCard)
+                        |> List.map (always (viewHiddenTableauCard msgTagger position tableau))
                     , cards
                         |> List.reverse
                         |> List.map (viewTableauCard msgTagger position tableau)
@@ -600,6 +602,10 @@ viewTableauCard msgTagger position tableau card =
         ]
 
 
-viewHiddenTableauCard : Html msg
-viewHiddenTableauCard =
-    div [] [ viewHidden ]
+viewHiddenTableauCard : (Msg -> msg) -> Position -> Tableau -> Html msg
+viewHiddenTableauCard msgTagger position tableau =
+    div
+        [ onClick (msgTagger (ClickedTableau position tableau Nothing))
+        ]
+        [ viewHidden
+        ]
