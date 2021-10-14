@@ -5,6 +5,7 @@ import Card
         ( Card(..)
         , Color(..)
         , Figure(..)
+        , viewHidden
         )
 import Css exposing (position)
 import Html exposing (..)
@@ -87,13 +88,13 @@ initEmpty =
     , foundation2 = Foundation []
     , foundation3 = Foundation []
     , foundation4 = Foundation []
-    , tableau1 = Tableau { cards = [], showFrom = 0 }
-    , tableau2 = Tableau { cards = [], showFrom = 1 }
-    , tableau3 = Tableau { cards = [], showFrom = 2 }
-    , tableau4 = Tableau { cards = [], showFrom = 3 }
-    , tableau5 = Tableau { cards = [], showFrom = 4 }
-    , tableau6 = Tableau { cards = [], showFrom = 5 }
-    , tableau7 = Tableau { cards = [], showFrom = 6 }
+    , tableau1 = Tableau { cards = [], hiddenCards = [] }
+    , tableau2 = Tableau { cards = [], hiddenCards = [] }
+    , tableau3 = Tableau { cards = [], hiddenCards = [] }
+    , tableau4 = Tableau { cards = [], hiddenCards = [] }
+    , tableau5 = Tableau { cards = [], hiddenCards = [] }
+    , tableau6 = Tableau { cards = [], hiddenCards = [] }
+    , tableau7 = Tableau { cards = [], hiddenCards = [] }
     , interaction = NotDragging
     }
 
@@ -442,10 +443,13 @@ view msgTagger model =
             []
             [ div
                 [ style "display" "flex"
+                , style "justify-content" "space-between"
                 , style "margin-bottom" "1rem"
                 ]
-                [ viewStock msgTagger model
-                , viewWaste msgTagger model
+                [ div [ style "display" "flex" ]
+                    [ viewStock msgTagger model
+                    , viewWaste msgTagger model
+                    ]
                 , viewFoundation msgTagger PFoundation1 model.foundation1
                 , viewFoundation msgTagger PFoundation2 model.foundation2
                 , viewFoundation msgTagger PFoundation3 model.foundation3
@@ -453,6 +457,7 @@ view msgTagger model =
                 ]
             , div
                 [ style "display" "flex"
+                , style "justify-content" "space-between"
                 ]
                 [ viewTableau msgTagger PTableau1 model.tableau1
                 , viewTableau msgTagger PTableau2 model.tableau2
@@ -523,9 +528,9 @@ viewFoundation msgTagger position foundation =
 
 
 viewTableau : (Msg -> msg) -> Position -> Tableau -> Html msg
-viewTableau msgTagger position ((Tableau { cards }) as tableau) =
-    case cards of
-        [] ->
+viewTableau msgTagger position ((Tableau { cards, hiddenCards }) as tableau) =
+    case ( cards, hiddenCards ) of
+        ( [], [] ) ->
             div
                 [ onClick (msgTagger (ClickedTableau position tableau Nothing))
                 ]
@@ -538,12 +543,16 @@ viewTableau msgTagger position ((Tableau { cards }) as tableau) =
                 , style "flex-direction" "column"
                 , style "margin-top" "4rem"
                 ]
-                (cards
-                    |> List.reverse
-                    |> List.indexedMap
-                        (\i card ->
-                            viewTableauCard msgTagger position tableau card i
-                        )
+                (List.concat
+                    [ hiddenCards
+                        |> List.map (always viewHidden)
+                    , cards
+                        |> List.reverse
+                        |> List.indexedMap
+                            (\i card ->
+                                viewTableauCard msgTagger position tableau card i
+                            )
+                    ]
                 )
 
 

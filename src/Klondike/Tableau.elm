@@ -14,14 +14,10 @@ import Card exposing (Card(..), Color(..), Figure(..))
 import List.Extra
 
 
-
---@TODO: drop the "showFrom" crap and actually have a list of hidden cards
-
-
 type Tableau
     = Tableau
         { cards : List Card
-        , showFrom : Int
+        , hiddenCards : List Card
         }
 
 
@@ -44,18 +40,18 @@ returns:
 
 -}
 splitAt : Card -> Tableau -> ( Tableau, List Card )
-splitAt from (Tableau { cards, showFrom }) =
+splitAt from (Tableau tableauRecord) =
     let
         splitIndex =
-            cards
+            tableauRecord.cards
                 |> List.Extra.elemIndex from
                 |> Maybe.withDefault -1
                 |> (+) 1
     in
-    cards
+    tableauRecord.cards
         |> List.Extra.splitAt splitIndex
         |> (\( left, right ) ->
-                ( Tableau { cards = right, showFrom = showFrom }
+                ( Tableau { tableauRecord | cards = right }
                 , left
                 )
            )
