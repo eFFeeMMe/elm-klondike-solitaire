@@ -307,6 +307,19 @@ undoDragging model =
                 |> (\m -> forcePlaceCards m position (List.reverse cards))
 
 
+uncoverTableaus : Model -> Model
+uncoverTableaus model =
+    { model
+        | tableau1 = Tableau.uncover model.tableau1
+        , tableau2 = Tableau.uncover model.tableau2
+        , tableau3 = Tableau.uncover model.tableau3
+        , tableau4 = Tableau.uncover model.tableau4
+        , tableau5 = Tableau.uncover model.tableau5
+        , tableau6 = Tableau.uncover model.tableau6
+        , tableau7 = Tableau.uncover model.tableau7
+    }
+
+
 clickStock : Model -> Model
 clickStock model =
     case model.interaction of
@@ -386,6 +399,7 @@ clickTableau position tableau card model =
                     model
                         |> setInteraction NotDragging
                         |> setTableauByPosition position tableau_
+                        |> uncoverTableaus
 
                 Nothing ->
                     undoDragging model
@@ -396,6 +410,7 @@ clickTableau position tableau card model =
                     model
                         |> setInteraction NotDragging
                         |> setTableauByPosition position tableau_
+                        |> uncoverTableaus
 
                 Nothing ->
                     undoDragging model
