@@ -4,10 +4,12 @@ module Klondike.Tableau exposing
     , forcePlace
     , getCards
     , head
+    , hideAllCards
     , isCardPlaceable
     , pickHead
     , place
     , splitAt
+    , uncover
     )
 
 import Card exposing (Card(..), Color(..), Figure(..))
@@ -22,13 +24,23 @@ type Tableau
 
 
 pickHead : Tableau -> ( Tableau, Maybe Card )
-pickHead ((Tableau ({ cards } as tableauStackRecord)) as tableauStack) =
+pickHead ((Tableau ({ cards } as tableauRecord)) as tableau) =
     case cards of
         card :: remaining ->
-            ( Tableau { tableauStackRecord | cards = remaining }, Just card )
+            ( Tableau { tableauRecord | cards = remaining }, Just card )
 
         [] ->
-            ( tableauStack, Nothing )
+            ( tableau, Nothing )
+
+
+pickHiddenHead : Tableau -> ( Tableau, Maybe Card )
+pickHiddenHead ((Tableau ({ hiddenCards } as tableauRecord)) as tableau) =
+    case hiddenCards of
+        card :: remaining ->
+            ( Tableau { tableauRecord | hiddenCards = remaining }, Just card )
+
+        [] ->
+            ( tableau, Nothing )
 
 
 {-| Picks a stack of cards from the Tableau, starting from the requested card
@@ -173,3 +185,25 @@ areCardsPlaceable tableau cards =
         |> List.Extra.last
         |> Maybe.map (isCardPlaceable tableau)
         |> Maybe.withDefault False
+
+
+hideAllCards : Tableau -> Tableau
+hideAllCards (Tableau { cards, hiddenCards }) =
+    Tableau { cards = [], hiddenCards = cards ++ hiddenCards }
+
+
+{-| Shows the topmost (head) card of the Tableau if it's hidden
+-}
+uncover : Tableau -> Tableau
+uncover tableau =
+    case head tableau of
+        Nothing ->
+            case pickHiddenHead tableau of
+                ( Tableau tableauRecord, Just card ) ->
+                    Tableau { cards = [ card ], hiddenCards = tableauRecord.hiddenCards }
+
+                ( tableau_, Nothing ) ->
+                    tableau_
+
+        _ ->
+            tableau

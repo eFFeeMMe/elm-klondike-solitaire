@@ -111,11 +111,8 @@ init model placements =
 
 initFromFullDeck : List Card -> Model
 initFromFullDeck cards =
-    let
-        model =
-            initEmpty
-    in
-    init { model | stock = Stock cards } initPlacements
+    init { initEmpty | stock = Stock cards } initPlacements
+        |> hideTableauCards
 
 
 initPlacements : List Position
@@ -143,6 +140,19 @@ initPlaceCard model position =
 
         Nothing ->
             model
+
+
+hideTableauCards : Model -> Model
+hideTableauCards model =
+    { model
+        | tableau1 = model.tableau1 |> Tableau.hideAllCards |> Tableau.uncover
+        , tableau2 = model.tableau2 |> Tableau.hideAllCards |> Tableau.uncover
+        , tableau3 = model.tableau3 |> Tableau.hideAllCards |> Tableau.uncover
+        , tableau4 = model.tableau4 |> Tableau.hideAllCards |> Tableau.uncover
+        , tableau5 = model.tableau5 |> Tableau.hideAllCards |> Tableau.uncover
+        , tableau6 = model.tableau6 |> Tableau.hideAllCards |> Tableau.uncover
+        , tableau7 = model.tableau7 |> Tableau.hideAllCards |> Tableau.uncover
+    }
 
 
 setInteraction : Interaction -> Model -> Model
@@ -434,6 +444,10 @@ clickFoundation position foundation model =
                     undoDragging model
 
 
+
+-- VIEW
+
+
 view : (Msg -> msg) -> Model -> Html msg
 view msgTagger model =
     div
@@ -545,23 +559,32 @@ viewTableau msgTagger position ((Tableau { cards, hiddenCards }) as tableau) =
                 ]
                 (List.concat
                     [ hiddenCards
-                        |> List.map (always viewHidden)
+                        |> List.map (always viewHiddenTableauCard)
                     , cards
                         |> List.reverse
-                        |> List.indexedMap
-                            (\i card ->
-                                viewTableauCard msgTagger position tableau card i
-                            )
+                        |> List.map (viewTableauCard msgTagger position tableau)
                     ]
+                    |> List.map List.singleton
+                    |> List.indexedMap
+                        (\i card ->
+                            div
+                                [ style "z-index" (String.fromInt i)
+                                , style "margin-top" "-4rem"
+                                ]
+                                card
+                        )
                 )
 
 
-viewTableauCard : (Msg -> msg) -> Position -> Tableau -> Card -> Int -> Html msg
-viewTableauCard msgTagger position tableau card i =
+viewTableauCard : (Msg -> msg) -> Position -> Tableau -> Card -> Html msg
+viewTableauCard msgTagger position tableau card =
     div
         [ onClick (msgTagger (ClickedTableau position tableau (Just card)))
-        , style "margin-top" "-4rem"
-        , style "z-index" (String.fromInt i)
         ]
         [ Card.view card
         ]
+
+
+viewHiddenTableauCard : Html msg
+viewHiddenTableauCard =
+    div [] [ viewHidden ]
