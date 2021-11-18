@@ -2,6 +2,8 @@
 
 An MS-style solitaire written in Elm.
 
+Try it out: https://loving-brahmagupta-7b820c.netlify.app/
+
 ## System requirements
 
 1. [Install Elm](https://github.com/elm/compiler/blob/master/installers/linux/README.md).
