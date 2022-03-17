@@ -1,9 +1,11 @@
 module Klondike.Tableau exposing
-    ( Tableau(..)
+    ( Tableau
     , areCardsPlaceable
     , empty
     , forcePlace
+    , fromCards
     , getCards
+    , getHiddenCards
     , head
     , hideAllCards
     , isCardPlaceable
@@ -27,6 +29,11 @@ type Tableau
 empty : Tableau
 empty =
     Tableau { cards = [], hiddenCards = [] }
+
+
+fromCards : List Card -> Tableau
+fromCards cards =
+    forcePlace empty cards
 
 
 pickHead : Tableau -> ( Tableau, Maybe Card )
@@ -104,6 +111,11 @@ place tableau cards =
 getCards : Tableau -> List Card
 getCards (Tableau { cards }) =
     cards
+
+
+getHiddenCards : Tableau -> List Card
+getHiddenCards (Tableau { hiddenCards }) =
+    hiddenCards
 
 
 {-| Given a card, return the figure of the card you can place on top of it,
