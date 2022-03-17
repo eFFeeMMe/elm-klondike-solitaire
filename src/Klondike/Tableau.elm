@@ -9,7 +9,7 @@ module Klondike.Tableau exposing
     , isCardPlaceable
     , pickHead
     , place
-    , splitAt
+    , splitAtCard
     , uncover
     )
 
@@ -49,7 +49,7 @@ pickHiddenHead ((Tableau ({ hiddenCards } as tableauRecord)) as tableau) =
             ( tableau, Nothing )
 
 
-{-| Picks a stack of cards from the Tableau, starting from the requested card
+{-| Pick a stack of cards from the Tableau, starting from the requested card
 
 Example
 pickFromCard (C2) Tableau {cards = [C1, C2, C3]}
@@ -57,8 +57,8 @@ returns:
 (Tableau {cards = [C3]}, [C1, C2])
 
 -}
-splitAt : Card -> Tableau -> ( Tableau, List Card )
-splitAt from (Tableau tableauRecord) =
+splitAtCard : Card -> Tableau -> ( Tableau, List Card )
+splitAtCard from (Tableau tableauRecord) =
     let
         splitIndex =
             tableauRecord.cards
@@ -76,8 +76,8 @@ splitAt from (Tableau tableauRecord) =
 
 
 head : Tableau -> Maybe Card
-head (Tableau { cards }) =
-    List.head cards
+head =
+    getCards >> List.head
 
 
 {-| Place a List Card onto the Tableau without caring for the rules
@@ -87,9 +87,9 @@ forcePlace (Tableau tableauRecord) cards =
     Tableau { tableauRecord | cards = cards ++ tableauRecord.cards }
 
 
-{-| Place a List Card onto the Tableau.
+{-| Place a list of cards onto the Tableau.
 
-Returns Nothing when the move is illegal.
+Return Nothing when the move is illegal.
 
 -}
 place : Tableau -> List Card -> Maybe Tableau
@@ -106,6 +106,9 @@ getCards (Tableau { cards }) =
     cards
 
 
+{-| Given a card, return the figure of the card you can place on top of it,
+or Nothing if you can't place any card on it.
+-}
 placeableFigure : Card -> Maybe Figure
 placeableFigure (Card _ figure) =
     case figure of
@@ -149,6 +152,8 @@ placeableFigure (Card _ figure) =
             Nothing
 
 
+{-| Given a card, return the color of the card you can place on top of it.
+-}
 placeableColor : Card -> Color
 placeableColor card =
     case Card.toColor card of
@@ -159,17 +164,22 @@ placeableColor card =
             Card.Black
 
 
+{-| Given a card, return the figure and color of the card you can place on it,
+or Nothing if it's illegal to place any card on it.
+-}
 tableauCardPlaceabilityRequirements : Card -> Maybe ( Figure, Color )
 tableauCardPlaceabilityRequirements card =
     placeableFigure card
         |> Maybe.map (\figure -> ( figure, placeableColor card ))
 
 
+{-| Given card A, return whether card B can be placed on top of it.
+-}
 tableauCardPlaceabilityRule : Card -> Card -> Bool
-tableauCardPlaceabilityRule to ((Card _ figure) as card) =
-    case tableauCardPlaceabilityRequirements to of
+tableauCardPlaceabilityRule cardA ((Card _ figureB) as cardB) =
+    case tableauCardPlaceabilityRequirements cardA of
         Just ( requiredFigure, requiredColor ) ->
-            Card.toColor card == requiredColor && figure == requiredFigure
+            Card.toColor cardB == requiredColor && figureB == requiredFigure
 
         Nothing ->
             False
@@ -185,6 +195,8 @@ isCardPlaceable tableau ((Card _ figure) as card) =
         |> Maybe.withDefault (figure == King)
 
 
+{-| Return whether
+-}
 areCardsPlaceable : Tableau -> List Card -> Bool
 areCardsPlaceable tableau cards =
     cards
@@ -193,12 +205,14 @@ areCardsPlaceable tableau cards =
         |> Maybe.withDefault False
 
 
+{-| Turn all shown cards into hidden cards.
+-}
 hideAllCards : Tableau -> Tableau
 hideAllCards (Tableau { cards, hiddenCards }) =
     Tableau { cards = [], hiddenCards = cards ++ hiddenCards }
 
 
-{-| Shows the topmost (head) card of the Tableau if it's hidden
+{-| Show the topmost (head) card of the Tableau if it's hidden.
 -}
 uncover : Tableau -> Tableau
 uncover tableau =

@@ -37,7 +37,7 @@ init _ url key =
       , url = url
       , klondike = Klondike.initEmpty
       }
-    , allCards |> Random.List.shuffle |> Random.generate SetDeck
+    , fullDeck |> Random.List.shuffle |> Random.generate SetDeck
     )
 
 

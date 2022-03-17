@@ -3,17 +3,17 @@ module Card exposing
     , Color(..)
     , Figure(..)
     , Suit(..)
-    , allCards
-    , allKinds
+    , allSuits
     , allValues
     , eq
+    , fullDeck
     , keepFrom
     , keepUntil
     , toColor
     , toFigure
-    , toKindString
-    , toKindView
     , toSuit
+    , toSuitString
+    , toSuitView
     , toValueString
     , view
     , viewEmpty
@@ -86,19 +86,19 @@ keepUntil card cards =
             []
 
 
-allCards : List Card
-allCards =
-    allKinds
+fullDeck : List Card
+fullDeck =
+    allSuits
         |> List.concatMap
-            (\kind ->
+            (\suit ->
                 List.map
-                    (\value -> Card kind value)
+                    (\value -> Card suit value)
                     allValues
             )
 
 
-allKinds : List Suit
-allKinds =
+allSuits : List Suit
+allSuits =
     [ Clubs
     , Diamonds
     , Hearts
@@ -125,8 +125,8 @@ allValues =
 
 
 toColor : Card -> Color
-toColor (Card kind _) =
-    case kind of
+toColor (Card suit _) =
+    case suit of
         Clubs ->
             Black
 
@@ -183,9 +183,9 @@ toValueString (Card _ value) =
             "2"
 
 
-toKindString : Card -> String
-toKindString (Card kind _) =
-    case kind of
+toSuitString : Card -> String
+toSuitString (Card suit _) =
+    case suit of
         Clubs ->
             "♣"
 
@@ -233,7 +233,7 @@ view card =
                 [ div []
                     [ text (card |> toValueString)
                     , br [] []
-                    , card |> toKindView
+                    , card |> toSuitView
                     ]
                 ]
             , div
@@ -254,16 +254,16 @@ view card =
                     ]
                     [ text (card |> toValueString)
                     , br [] []
-                    , card |> toKindView
+                    , card |> toSuitView
                     ]
                 ]
             ]
         ]
 
 
-toKindView : Card -> Html msg
-toKindView (Card kind _) =
-    case kind of
+toSuitView : Card -> Html msg
+toSuitView (Card suit _) =
+    case suit of
         Clubs ->
             span [ style "color" "black" ] [ text "♣" ]
 

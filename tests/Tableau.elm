@@ -14,19 +14,19 @@ splitAt =
     describe "Tableau.splitAt"
         [ test "should return a stack of cards starting from the requested card" <|
             \_ ->
-                Tableau.splitAt c3 tableau1
+                Tableau.splitAtCard c3 tableau1
                     |> Expect.equal
                         ( Tableau.Tableau { cards = [ c2 ], hiddenCards = [] }
                         , [ c5, c4, c3 ]
                         )
         , test "should return the original tableau when the requested card isn't found" <|
             \_ ->
-                Tableau.splitAt c6 tableau1
+                Tableau.splitAtCard c6 tableau1
                     |> Expect.equal
                         ( tableau1, [] )
-        , test "should return the original tableau when placing cards back" <|
+        , test "should return the original tableau when picking up cards and placing them back" <|
             \_ ->
-                (Tableau.splitAt c3 tableau1
+                (Tableau.splitAtCard c3 tableau1
                     |> (\( newTableau, cards ) ->
                             Tableau.forcePlace newTableau cards
                        )

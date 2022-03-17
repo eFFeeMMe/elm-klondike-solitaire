@@ -1,10 +1,28 @@
-module Klondike.Waste exposing (..)
+module Klondike.Waste exposing
+    ( Waste
+    , empty
+    , fromCards
+    , getCards
+    , head
+    , pick
+    , place
+    )
 
 import Card exposing (Card)
 
 
 type Waste
     = Waste (List Card)
+
+
+empty : Waste
+empty =
+    Waste []
+
+
+fromCards : List Card -> Waste
+fromCards cards =
+    Waste cards
 
 
 pick : Waste -> ( Waste, Maybe Card )
@@ -18,8 +36,8 @@ pick ((Waste cards) as wasteStack) =
 
 
 place : Waste -> Card -> Waste
-place (Waste cards) card =
-    Waste (card :: cards)
+place (Waste wasteCards) card =
+    Waste (card :: wasteCards)
 
 
 getCards : Waste -> List Card
@@ -27,6 +45,6 @@ getCards (Waste cards) =
     cards
 
 
-wasteTopCard : Waste -> Maybe Card
-wasteTopCard (Waste cards) =
+head : Waste -> Maybe Card
+head (Waste cards) =
     List.head cards

@@ -14,12 +14,12 @@ import Html.Events exposing (..)
 import Klondike.Foundation as Foundation exposing (Foundation(..))
 import Klondike.Stock as Stock exposing (Stock(..))
 import Klondike.Tableau as Tableau exposing (Tableau(..))
-import Klondike.Waste as Waste exposing (Waste(..))
+import Klondike.Waste as Waste
 
 
 type alias Model =
     { stock : Stock
-    , waste : Waste
+    , waste : Waste.Waste
     , foundation1 : Foundation
     , foundation2 : Foundation
     , foundation3 : Foundation
@@ -83,7 +83,7 @@ update model msg =
 initEmpty : Model
 initEmpty =
     { stock = Stock []
-    , waste = Waste []
+    , waste = Waste.empty
     , foundation1 = Foundation []
     , foundation2 = Foundation []
     , foundation3 = Foundation []
@@ -334,7 +334,7 @@ clickStock model =
                 [] ->
                     { model
                         | stock = Stock (Waste.getCards model.waste)
-                        , waste = Waste []
+                        , waste = Waste.empty
                     }
 
         DraggingCardFrom fromPosition card ->
@@ -360,7 +360,7 @@ clickWaste model =
                 card :: cards ->
                     { model
                         | interaction = DraggingCardFrom PWaste card
-                        , waste = Waste cards
+                        , waste = Waste.fromCards cards
                     }
 
                 [] ->
@@ -387,7 +387,7 @@ clickTableau position tableau card model =
                 Just card_ ->
                     let
                         ( newTableau, grabbedCards ) =
-                            Tableau.splitAt card_ tableau
+                            Tableau.splitAtCard card_ tableau
                     in
                     model
                         |> setInteraction (DraggingCardsFrom position grabbedCards)
@@ -539,7 +539,7 @@ viewWaste msgTagger { waste } =
         , style "margin-right" "1rem"
         ]
         [ waste
-            |> Waste.wasteTopCard
+            |> Waste.head
             |> Maybe.map Card.view
             |> Maybe.withDefault
                 Card.viewEmpty
