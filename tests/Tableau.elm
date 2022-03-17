@@ -16,7 +16,7 @@ splitAt =
             \_ ->
                 Tableau.splitAt c3 tableau1
                     |> Expect.equal
-                        ( Tableau.Tableau { cards = [ c2 ], showFrom = 0 }
+                        ( Tableau.Tableau { cards = [ c2 ], hiddenCards = [] }
                         , [ c5, c4, c3 ]
                         )
         , test "should return the original tableau when the requested card isn't found" <|

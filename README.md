@@ -1,15 +1,14 @@
-# Elm Klondike
+# Elm Klondike Solitaire
 
-An MS-style solitaire written in Elm.
+A card solitaire game written in Elm, in the spirit of MS' early solitaire.
 
-Try it out: https://loving-brahmagupta-7b820c.netlify.app/
+![Screenshot of a new game of elm-klondike-solitaire](scrapbook/glamourshot.png)
 
-## System requirements
+Try it out now: https://loving-brahmagupta-7b820c.netlify.app/
 
-1. [Install Elm](https://github.com/elm/compiler/blob/master/installers/linux/README.md).
+## Install dependencies & run locally
 
-2. Install the rest of the usual suspects: `npm install -g elm-test elm-format elm-live`
+The following commands will start an `elm-live` dev server serving Elm Klondike Solitaire:
 
-## Develop (Run using elm-live)
-
-`make develop`
+1. `yarn install`
+2. `yarn start`

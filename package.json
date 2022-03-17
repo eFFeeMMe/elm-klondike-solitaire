@@ -1,0 +1,20 @@
+{
+  "name": "elm-klondike-solitaire",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:eFFeeMMe/elm-klondike-solitaire.git",
+  "author": "Francesco Mastellone <francesco.mastellone@prima.it>",
+  "license": "MIT",
+  "dependencies": {
+    "elm": "^0.19.1-5",
+    "elm-format": "^0.8.5",
+    "elm-live": "^4.0.2",
+    "elm-review": "^2.7.0",
+    "elm-test": "^0.19.1-revision7"
+  },
+  "scripts": {
+    "build": "elm make src/Main.elm --output dist/index.html",
+    "start": "elm-live src/Main.elm -- --debug",
+    "test": "elm-test"
+  }
+}

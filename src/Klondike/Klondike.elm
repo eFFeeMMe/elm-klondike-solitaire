@@ -118,13 +118,13 @@ initFromFullDeck cards =
 initPlacements : List Position
 initPlacements =
     List.concat
-        [ List.map (always PTableau1) (List.range 1 1)
-        , List.map (always PTableau2) (List.range 1 2)
-        , List.map (always PTableau3) (List.range 1 3)
-        , List.map (always PTableau4) (List.range 1 4)
-        , List.map (always PTableau5) (List.range 1 5)
-        , List.map (always PTableau6) (List.range 1 6)
-        , List.map (always PTableau7) (List.range 1 7)
+        [ List.repeat 1 PTableau1
+        , List.repeat 2 PTableau2
+        , List.repeat 3 PTableau3
+        , List.repeat 4 PTableau4
+        , List.repeat 5 PTableau5
+        , List.repeat 6 PTableau6
+        , List.repeat 7 PTableau7
         ]
 
 

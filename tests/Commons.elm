@@ -42,7 +42,14 @@ h4 =
 
 tableau1 : Tableau.Tableau
 tableau1 =
-    Tableau.Tableau { cards = [ c5, c4, c3, c2 ], showFrom = 0 }
+    Tableau.empty
+        |> (\tableau -> Tableau.forcePlace tableau [ c5, c4, c3, c2 ])
+
+
+
+-- TODO: card fuzzer
+-- TODO: card list fuzzer
+-- TODO: place n fuzzy cards: is tableau invariant respected?
 
 
 foundation1 : Foundation.Foundation

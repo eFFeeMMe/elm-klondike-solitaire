@@ -1,6 +1,7 @@
 module Klondike.Tableau exposing
     ( Tableau(..)
     , areCardsPlaceable
+    , empty
     , forcePlace
     , getCards
     , head
@@ -21,6 +22,11 @@ type Tableau
         { cards : List Card
         , hiddenCards : List Card
         }
+
+
+empty : Tableau
+empty =
+    Tableau { cards = [], hiddenCards = [] }
 
 
 pickHead : Tableau -> ( Tableau, Maybe Card )
