@@ -13,13 +13,13 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Klondike.Foundation as Foundation exposing (Foundation(..))
 import Klondike.Stock as Stock exposing (Stock(..))
-import Klondike.Tableau as Tableau exposing (Tableau(..))
-import Klondike.Waste as Waste
+import Klondike.Tableau as Tableau exposing (Tableau)
+import Klondike.Waste as Waste exposing (Waste)
 
 
 type alias Model =
     { stock : Stock
-    , waste : Waste.Waste
+    , waste : Waste
     , foundation1 : Foundation
     , foundation2 : Foundation
     , foundation3 : Foundation
@@ -88,13 +88,13 @@ initEmpty =
     , foundation2 = Foundation []
     , foundation3 = Foundation []
     , foundation4 = Foundation []
-    , tableau1 = Tableau { cards = [], hiddenCards = [] }
-    , tableau2 = Tableau { cards = [], hiddenCards = [] }
-    , tableau3 = Tableau { cards = [], hiddenCards = [] }
-    , tableau4 = Tableau { cards = [], hiddenCards = [] }
-    , tableau5 = Tableau { cards = [], hiddenCards = [] }
-    , tableau6 = Tableau { cards = [], hiddenCards = [] }
-    , tableau7 = Tableau { cards = [], hiddenCards = [] }
+    , tableau1 = Tableau.empty
+    , tableau2 = Tableau.empty
+    , tableau3 = Tableau.empty
+    , tableau4 = Tableau.empty
+    , tableau5 = Tableau.empty
+    , tableau6 = Tableau.empty
+    , tableau7 = Tableau.empty
     , interaction = NotDragging
     }
 
@@ -559,7 +559,14 @@ viewFoundation msgTagger position foundation =
 
 
 viewTableau : (Msg -> msg) -> Position -> Tableau -> Html msg
-viewTableau msgTagger position ((Tableau { cards, hiddenCards }) as tableau) =
+viewTableau msgTagger position tableau =
+    let
+        cards =
+            Tableau.getCards tableau
+
+        hiddenCards =
+            Tableau.getHiddenCards tableau
+    in
     case ( cards, hiddenCards ) of
         ( [], [] ) ->
             div

@@ -14,6 +14,8 @@
   },
   "scripts": {
     "build": "elm make src/Main.elm --output dist/index.html",
+    "format": "elm-format src/ --yes",
+    "format:check": "elm-format src/ --validate",
     "start": "elm-live src/Main.elm -- --debug",
     "test": "elm-test"
   }
