@@ -82,7 +82,7 @@ update model msg =
 
 initEmpty : Model
 initEmpty =
-    { stock = Stock []
+    { stock = Stock.empty
     , waste = Waste.empty
     , foundation1 = Foundation []
     , foundation2 = Foundation []
@@ -111,7 +111,7 @@ init model placements =
 
 initFromFullDeck : List Card -> Model
 initFromFullDeck cards =
-    init { initEmpty | stock = Stock cards } initPlacements
+    init { initEmpty | stock = Stock.fromCards cards } initPlacements
         |> hideTableauCards
 
 
@@ -328,12 +328,12 @@ clickStock model =
                 card :: cards ->
                     { model
                         | interaction = DraggingCardFrom PStock card
-                        , stock = Stock cards
+                        , stock = Stock.fromCards cards
                     }
 
                 [] ->
                     { model
-                        | stock = Stock (Waste.getCards model.waste)
+                        | stock = Stock.fromCards (Waste.getCards model.waste)
                         , waste = Waste.empty
                     }
 

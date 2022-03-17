@@ -1,10 +1,28 @@
-module Klondike.Stock exposing (..)
+module Klondike.Stock exposing
+    ( Stock
+    , empty
+    , fromCards
+    , getCards
+    , head
+    , pick
+    , place
+    )
 
 import Card exposing (Card)
 
 
 type Stock
     = Stock (List Card)
+
+
+empty : Stock
+empty =
+    Stock []
+
+
+fromCards : List Card -> Stock
+fromCards cards =
+    Stock cards
 
 
 pick : Stock -> ( Stock, Maybe Card )
