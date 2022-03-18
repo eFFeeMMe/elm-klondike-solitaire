@@ -1,5 +1,7 @@
 # Elm Klondike Solitaire
 
+![CI status for the Check%20formatting,%20lint,%20test workflow](https://github.com/eFFeeMMe/elm-klondike-solitaire/workflows/Check%20formatting,%20lint,%20test/badge.svg)
+
 A card solitaire game written in Elm, in the spirit of MS' early solitaire.
 
 ![Screenshot of a new game of elm-klondike-solitaire](scrapbook/glamourshot.png)
