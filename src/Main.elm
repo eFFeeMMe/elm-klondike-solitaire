@@ -5,7 +5,6 @@ import Browser.Navigation
 import Card exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (..)
 import Klondike.Klondike as Klondike
 import Random
 import Random.List

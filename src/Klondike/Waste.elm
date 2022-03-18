@@ -1,10 +1,9 @@
 module Klondike.Waste exposing
     ( Waste
     , empty
-    , fromCards
     , getCards
     , head
-    , pick
+    , pickHead
     , place
     )
 
@@ -20,13 +19,8 @@ empty =
     Waste []
 
 
-fromCards : List Card -> Waste
-fromCards cards =
-    Waste cards
-
-
-pick : Waste -> ( Waste, Maybe Card )
-pick ((Waste cards) as wasteStack) =
+pickHead : Waste -> ( Waste, Maybe Card )
+pickHead ((Waste cards) as wasteStack) =
     case cards of
         card :: remaining ->
             ( Waste remaining, Just card )

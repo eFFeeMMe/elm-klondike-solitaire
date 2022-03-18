@@ -6,7 +6,9 @@
   "author": "Francesco Mastellone <francesco.mastellone@prima.it>",
   "license": "MIT",
   "dependencies": {
-    "elm": "^0.19.1-5",
+    "elm": "^0.19.1-5"
+  },
+  "devDependencies": {
     "elm-format": "^0.8.5",
     "elm-live": "^4.0.2",
     "elm-review": "^2.7.0",
@@ -16,6 +18,7 @@
     "build": "elm make src/Main.elm --output dist/index.html",
     "format": "elm-format src/ --yes",
     "format:check": "elm-format src/ --validate",
+    "lint": "elm-review",
     "start": "elm-live src/Main.elm -- --debug",
     "test": "elm-test"
   }

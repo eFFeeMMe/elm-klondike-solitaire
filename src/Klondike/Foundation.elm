@@ -57,16 +57,7 @@ isCardPlaceable : Foundation -> Card -> Bool
 isCardPlaceable foundation (Card suit figure) =
     case foundation |> head of
         Just fHead ->
-            case
-                ( isSuitPlaceable fHead suit
-                , isFigurePlaceable fHead figure
-                )
-            of
-                ( True, True ) ->
-                    True
-
-                ( _, _ ) ->
-                    False
+            isSuitPlaceable fHead suit && isFigurePlaceable fHead figure
 
         Nothing ->
             figure == Ace

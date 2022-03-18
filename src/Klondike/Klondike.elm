@@ -1,18 +1,11 @@
 module Klondike.Klondike exposing (..)
 
-import Card
-    exposing
-        ( Card(..)
-        , Color(..)
-        , Figure(..)
-        , viewHidden
-        )
-import Css exposing (position)
+import Card exposing (Card)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (..)
+import Html.Events exposing (onClick)
 import Klondike.Foundation as Foundation exposing (Foundation(..))
-import Klondike.Stock as Stock exposing (Stock(..))
+import Klondike.Stock as Stock exposing (Stock)
 import Klondike.Tableau as Tableau exposing (Tableau)
 import Klondike.Waste as Waste exposing (Waste)
 
@@ -356,14 +349,14 @@ clickWaste : Model -> Model
 clickWaste model =
     case model.interaction of
         NotDragging ->
-            case Waste.getCards model.waste of
-                card :: cards ->
+            case Waste.pickHead model.waste of
+                ( waste, Just card ) ->
                     { model
                         | interaction = DraggingCardFrom PWaste card
-                        , waste = Waste.fromCards cards
+                        , waste = waste
                     }
 
-                [] ->
+                ( _, Nothing ) ->
                     model
 
         DraggingCardFrom _ card ->
@@ -614,5 +607,5 @@ viewHiddenTableauCard msgTagger position tableau =
     div
         [ onClick (msgTagger (ClickedTableau position tableau Nothing))
         ]
-        [ viewHidden
+        [ Card.viewHidden
         ]

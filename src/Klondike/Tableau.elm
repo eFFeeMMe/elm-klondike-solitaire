@@ -15,7 +15,7 @@ module Klondike.Tableau exposing
     , uncover
     )
 
-import Card exposing (Card(..), Color(..), Figure(..))
+import Card exposing (Card(..), Color, Figure(..))
 import List.Extra
 
 
