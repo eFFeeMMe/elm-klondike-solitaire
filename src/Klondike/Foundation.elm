@@ -1,6 +1,8 @@
 module Klondike.Foundation exposing
-    ( Foundation(..)
+    ( Foundation
+    , empty
     , forcePlace
+    , fromCards
     , getCards
     , head
     , isCardPlaceable
@@ -13,6 +15,16 @@ import Card exposing (Card(..), Figure(..))
 
 type Foundation
     = Foundation (List Card)
+
+
+empty : Foundation
+empty =
+    Foundation []
+
+
+fromCards : List Card -> Foundation
+fromCards cards =
+    Foundation cards
 
 
 pick : Foundation -> ( Foundation, Maybe Card )

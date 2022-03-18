@@ -42,8 +42,7 @@ h4 =
 
 tableau1 : Tableau.Tableau
 tableau1 =
-    Tableau.empty
-        |> (\tableau -> Tableau.forcePlace tableau [ c5, c4, c3, c2 ])
+    Tableau.fromCards [ c5, c4, c3, c2 ]
 
 
 
@@ -54,4 +53,4 @@ tableau1 =
 
 foundation1 : Foundation.Foundation
 foundation1 =
-    Foundation.Foundation [ c5, c4, c3 ]
+    Foundation.fromCards [ c5, c4, c3 ]

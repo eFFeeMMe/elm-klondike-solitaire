@@ -4,7 +4,7 @@ import Card exposing (Card)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
-import Klondike.Foundation as Foundation exposing (Foundation(..))
+import Klondike.Foundation as Foundation exposing (Foundation)
 import Klondike.Stock as Stock exposing (Stock)
 import Klondike.Tableau as Tableau exposing (Tableau)
 import Klondike.Waste as Waste exposing (Waste)
@@ -77,10 +77,10 @@ initEmpty : Model
 initEmpty =
     { stock = Stock.empty
     , waste = Waste.empty
-    , foundation1 = Foundation []
-    , foundation2 = Foundation []
-    , foundation3 = Foundation []
-    , foundation4 = Foundation []
+    , foundation1 = Foundation.empty
+    , foundation2 = Foundation.empty
+    , foundation3 = Foundation.empty
+    , foundation4 = Foundation.empty
     , tableau1 = Tableau.empty
     , tableau2 = Tableau.empty
     , tableau3 = Tableau.empty
