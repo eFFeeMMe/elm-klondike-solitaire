@@ -3,7 +3,9 @@ module Klondike.Klondike exposing (..)
 import Card exposing (Card)
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
+import Html.Events exposing (on, onClick, preventDefaultOn)
+import Json.Decode
+import Json.Encode
 import Klondike.Foundation as Foundation exposing (Foundation)
 import Klondike.Stock as Stock exposing (Stock)
 import Klondike.Tableau as Tableau exposing (Tableau)
@@ -25,6 +27,7 @@ type alias Model =
     , tableau6 : Tableau
     , tableau7 : Tableau
     , interaction : Interaction
+    , mousePosition : MousePosition
     }
 
 
@@ -55,6 +58,10 @@ type Msg
     | ClickedWaste
     | ClickedTableau Position Tableau (Maybe Card)
     | ClickedFoundation Position Foundation
+    | NoOp
+    | DragStart
+    | DragDrop
+    | MouseMove MousePosition
 
 
 update : Model -> Msg -> Model
@@ -71,6 +78,18 @@ update model msg =
 
         ClickedTableau position tableau card ->
             clickTableau position tableau card model
+
+        NoOp ->
+            model
+
+        DragStart ->
+            model
+
+        DragDrop ->
+            model
+
+        MouseMove mousePosition ->
+            { model | mousePosition = mousePosition }
 
 
 initEmpty : Model
@@ -89,6 +108,7 @@ initEmpty =
     , tableau6 = Tableau.empty
     , tableau7 = Tableau.empty
     , interaction = NotDragging
+    , mousePosition = MousePosition 0 0
     }
 
 
@@ -464,7 +484,7 @@ view msgTagger model =
         [ style "margin" "1rem"
         ]
         [ div
-            []
+            [ onMouseMove msgTagger ]
             [ div
                 [ style "display" "flex"
                 , style "justify-content" "space-between"
@@ -492,6 +512,7 @@ view msgTagger model =
                 , viewTableau msgTagger PTableau7 model.tableau7
                 ]
             ]
+        , viewInteraction model.mousePosition model.interaction
         ]
 
 
@@ -581,14 +602,13 @@ viewTableau msgTagger position tableau =
                         |> List.reverse
                         |> List.map (viewTableauCard msgTagger position tableau)
                     ]
-                    |> List.map List.singleton
                     |> List.indexedMap
                         (\i card ->
                             div
                                 [ style "z-index" (String.fromInt i)
                                 , style "margin-top" "-4rem"
                                 ]
-                                card
+                                [ card ]
                         )
                 )
 
@@ -597,9 +617,101 @@ viewTableauCard : (Msg -> msg) -> Position -> Tableau -> Card -> Html msg
 viewTableauCard msgTagger position tableau card =
     div
         [ onClick (msgTagger (ClickedTableau position tableau (Just card)))
+
+        -- , preventDefaultOnDragOver msgTagger
+        -- , onDragStart (msgTagger (ClickedTableau position tableau (Just card)))
+        -- , onDragDrop (msgTagger (ClickedTableau position tableau (Just card)))
         ]
         [ Card.view card
         ]
+
+
+type alias MousePosition =
+    { x : Int
+    , y : Int
+    }
+
+
+onMouseMove : (Msg -> msg) -> Attribute msg
+onMouseMove msgTagger =
+    on
+        "mousemove"
+        (Json.Decode.map2
+            MousePosition
+            (Json.Decode.field "x" Json.Decode.int)
+            (Json.Decode.field "y" Json.Decode.int)
+            |> Json.Decode.map MouseMove
+            |> Json.Decode.map msgTagger
+        )
+
+
+viewInteraction : MousePosition -> Interaction -> Html msg
+viewInteraction mousePosition interaction =
+    let
+        display =
+            case interaction of
+                NotDragging ->
+                    "none"
+
+                _ ->
+                    "block"
+
+        left =
+            mousePosition.x
+                |> (+) 50
+                |> String.fromInt
+                |> (\str -> String.append str "px")
+
+        top =
+            mousePosition.y
+                |> (+) 50
+                |> String.fromInt
+                |> (\str -> String.append str "px")
+    in
+    div
+        [ style "display" display
+        , style "position" "absolute"
+        , style "z-index" "999"
+        , style "left" left
+        , style "top" top
+        ]
+        (case interaction of
+            NotDragging ->
+                []
+
+            DraggingCardFrom _ card ->
+                [ Card.view card ]
+
+            DraggingCardsFrom _ cards ->
+                cards
+                    |> List.map Card.view
+                    |> List.indexedMap
+                        (\i card ->
+                            div
+                                [ style "z-index" (String.fromInt i)
+                                , style "margin-top" "-4rem"
+                                ]
+                                [ card ]
+                        )
+        )
+
+
+
+-- onDragStart : msg -> Attribute msg
+-- onDragStart message =
+--     preventDefaultOn "dragstart" (Json.Decode.succeed ( message, True ))
+-- onDragDrop : msg -> Attribute msg
+-- onDragDrop message =
+--     preventDefaultOn "drop" (Json.Decode.succeed ( message, True ))
+-- preventDefaultOnDragOver : (Msg -> msg) -> Attribute msg
+-- preventDefaultOnDragOver msgTagger =
+--     on "dragover" (Json.Decode.succeed (msgTagger NoOp))
+-- hijackOn : String -> D.Decoder msg -> Attribute msg
+-- hijackOn event decoder =
+--     preventDefaultOn event (D.map hijack decoder)
+-- hijack : msg -> ( msg, Bool )
+-- hijack msg =
+--     ( msg, True )
 
 
 viewHiddenTableauCard : (Msg -> msg) -> Position -> Tableau -> Html msg
