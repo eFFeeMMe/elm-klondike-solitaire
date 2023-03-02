@@ -491,8 +491,8 @@ view msgTagger model =
                 , style "margin-bottom" "1rem"
                 ]
                 [ div [ style "display" "flex" ]
-                    [ viewStock msgTagger model
-                    , viewWaste msgTagger model
+                    [ viewStock (msgTagger ClickedStock) model
+                    , viewWaste (msgTagger ClickedWaste) model
                     ]
                 , viewFoundation msgTagger PFoundation1 model.foundation1
                 , viewFoundation msgTagger PFoundation2 model.foundation2
@@ -512,63 +512,60 @@ view msgTagger model =
                 , viewTableau msgTagger PTableau7 model.tableau7
                 ]
             ]
-        , viewInteraction model.mousePosition model.interaction
+        , viewInteraction msgTagger model.mousePosition model.interaction
         ]
 
 
-viewStock : (Msg -> msg) -> Model -> Html msg
-viewStock msgTagger { stock, interaction } =
+viewStock : msg -> Model -> Html msg
+viewStock onClickMsg { stock, interaction } =
     div
-        [ onClick (msgTagger ClickedStock)
-        ]
+        []
         [ case interaction of
             NotDragging ->
                 case Stock.head stock of
                     Just card ->
-                        Card.view card
+                        Card.view onClickMsg card
 
                     Nothing ->
-                        Card.viewEmpty
+                        Card.viewEmpty onClickMsg
 
             DraggingCardFrom PStock _ ->
-                Card.viewHidden
+                Card.viewHidden onClickMsg
 
             DraggingCardsFrom PStock _ ->
-                Card.viewHidden
+                Card.viewHidden onClickMsg
 
             _ ->
                 case Stock.head stock of
                     Just card ->
-                        Card.view card
+                        Card.view onClickMsg card
 
                     Nothing ->
-                        Card.viewEmpty
+                        Card.viewEmpty onClickMsg
         ]
 
 
-viewWaste : (Msg -> msg) -> Model -> Html msg
-viewWaste msgTagger { waste } =
+viewWaste : msg -> Model -> Html msg
+viewWaste onClickMsg { waste } =
     div
-        [ onClick (msgTagger ClickedWaste)
-        , style "margin-right" "1rem"
+        [ style "margin-right" "1rem"
         ]
         [ waste
             |> Waste.head
-            |> Maybe.map Card.view
+            |> Maybe.map (Card.view onClickMsg)
             |> Maybe.withDefault
-                Card.viewEmpty
+                (Card.viewEmpty onClickMsg)
         ]
 
 
 viewFoundation : (Msg -> msg) -> Position -> Foundation -> Html msg
 viewFoundation msgTagger position foundation =
     div
-        [ onClick (msgTagger (ClickedFoundation position foundation))
-        ]
+        []
         [ foundation
             |> Foundation.head
-            |> Maybe.map Card.view
-            |> Maybe.withDefault Card.viewEmpty
+            |> Maybe.map (Card.view (msgTagger (ClickedFoundation position foundation)))
+            |> Maybe.withDefault (Card.viewEmpty (msgTagger (ClickedFoundation position foundation)))
         ]
 
 
@@ -586,7 +583,7 @@ viewTableau msgTagger position tableau =
             div
                 [ onClick (msgTagger (ClickedTableau position tableau Nothing))
                 ]
-                [ Card.viewEmpty
+                [ Card.viewEmpty (msgTagger (ClickedTableau position tableau Nothing))
                 ]
 
         _ ->
@@ -616,13 +613,11 @@ viewTableau msgTagger position tableau =
 viewTableauCard : (Msg -> msg) -> Position -> Tableau -> Card -> Html msg
 viewTableauCard msgTagger position tableau card =
     div
-        [ onClick (msgTagger (ClickedTableau position tableau (Just card)))
-
-        -- , preventDefaultOnDragOver msgTagger
-        -- , onDragStart (msgTagger (ClickedTableau position tableau (Just card)))
-        -- , onDragDrop (msgTagger (ClickedTableau position tableau (Just card)))
+        [ preventDefaultOnDragOver (msgTagger NoOp)
+        , onDragStart (msgTagger (ClickedTableau position tableau (Just card)))
+        , onDragDrop (msgTagger (ClickedTableau position tableau (Just card)))
         ]
-        [ Card.view card
+        [ Card.view (msgTagger (ClickedTableau position tableau (Just card))) card
         ]
 
 
@@ -645,8 +640,8 @@ onMouseMove msgTagger =
         )
 
 
-viewInteraction : MousePosition -> Interaction -> Html msg
-viewInteraction mousePosition interaction =
+viewInteraction : (Msg -> msg) -> MousePosition -> Interaction -> Html msg
+viewInteraction msgTagger mousePosition interaction =
     let
         display =
             case interaction of
@@ -680,11 +675,11 @@ viewInteraction mousePosition interaction =
                 []
 
             DraggingCardFrom _ card ->
-                [ Card.view card ]
+                [ Card.view (msgTagger NoOp) card ]
 
             DraggingCardsFrom _ cards ->
                 cards
-                    |> List.map Card.view
+                    |> List.map (Card.view (msgTagger NoOp))
                     |> List.indexedMap
                         (\i card ->
                             div
@@ -696,16 +691,22 @@ viewInteraction mousePosition interaction =
         )
 
 
+onDragStart : msg -> Attribute msg
+onDragStart msg =
+    preventDefaultOn "dragstart" (Json.Decode.succeed ( msg, True ))
 
--- onDragStart : msg -> Attribute msg
--- onDragStart message =
---     preventDefaultOn "dragstart" (Json.Decode.succeed ( message, True ))
--- onDragDrop : msg -> Attribute msg
--- onDragDrop message =
---     preventDefaultOn "drop" (Json.Decode.succeed ( message, True ))
--- preventDefaultOnDragOver : (Msg -> msg) -> Attribute msg
--- preventDefaultOnDragOver msgTagger =
---     on "dragover" (Json.Decode.succeed (msgTagger NoOp))
+
+onDragDrop : msg -> Attribute msg
+onDragDrop msg =
+    preventDefaultOn "drop" (Json.Decode.succeed ( msg, True ))
+
+
+preventDefaultOnDragOver : msg -> Attribute msg
+preventDefaultOnDragOver msg =
+    on "dragover" (Json.Decode.succeed msg)
+
+
+
 -- hijackOn : String -> D.Decoder msg -> Attribute msg
 -- hijackOn event decoder =
 --     preventDefaultOn event (D.map hijack decoder)
@@ -719,5 +720,5 @@ viewHiddenTableauCard msgTagger position tableau =
     div
         [ onClick (msgTagger (ClickedTableau position tableau Nothing))
         ]
-        [ Card.viewHidden
+        [ Card.viewHidden (msgTagger (ClickedTableau position tableau Nothing))
         ]

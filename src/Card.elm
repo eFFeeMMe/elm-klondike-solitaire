@@ -22,6 +22,7 @@ module Card exposing
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onClick)
 import List.Extra
 
 
@@ -213,12 +214,14 @@ toFigure (Card _ figure) =
 -- VIEW --
 
 
-view : Card -> Html msg
-view card =
+view : msg -> Card -> Html msg
+view onClickMsg card =
     div
         (commonCardAttributes
             ++ [ style "background" "white"
                , style "font-size" "0.75rem"
+               , style "user-select" "none"
+               , onClick onClickMsg
                ]
         )
         [ div
@@ -277,23 +280,25 @@ toSuitView (Card suit _) =
             span [ style "color" "black" ] [ text "♠" ]
 
 
-viewHidden : Html msg
-viewHidden =
+viewHidden : msg -> Html msg
+viewHidden onClickMsg =
     div
         (commonCardAttributes
             ++ [ style "background" "beige"
+               , onClick onClickMsg
                ]
         )
         []
 
 
-viewEmpty : Html msg
-viewEmpty =
+viewEmpty : msg -> Html msg
+viewEmpty onClickMsg =
     div
         (commonCardAttributes
             ++ [ style "border" "none"
                , style "box-shadow" "inset 1px 1px rgba(0, 0, 0, 0.02)"
                , style "background" "rgba(5,3,0,0.03)"
+               , onClick onClickMsg
                ]
         )
         []
