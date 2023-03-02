@@ -10,7 +10,10 @@ Try it out now: https://loving-brahmagupta-7b820c.netlify.app/
 
 ## Install dependencies & run locally
 
-The following commands will start an `elm-live` dev server serving Elm Klondike Solitaire:
+1. Use node 18 and install dependencies:
+  1. `nvm use 18`
+  2. `npm install -g yarn`
+  3. `yarn install`
 
-1. `yarn install`
-2. `yarn start`
+2. Start an `elm-live` dev server serving Elm Klondike Solitaire:
+  1. `yarn start`
