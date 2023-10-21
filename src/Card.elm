@@ -141,6 +141,16 @@ toColor (Card suit _) =
             Black
 
 
+toColorString : Card -> String
+toColorString card =
+    case toColor card of
+        Black ->
+            "black"
+
+        Red ->
+            "red"
+
+
 toValueString : Card -> String
 toValueString (Card _ value) =
     case value of
@@ -233,10 +243,15 @@ view onClickMsg card =
                 [ style "display" "flex"
                 , style "justify-content" "start"
                 ]
-                [ div []
-                    [ text (card |> toValueString)
-                    , br [] []
-                    , card |> toSuitView
+                [ div
+                    [ style "position" "absolute"
+                    ]
+                    [ div []
+                        [ text (card |> toValueString)
+                        ]
+                    , div []
+                        [ card |> toSuitView
+                        ]
                     ]
                 ]
             , div
@@ -254,10 +269,15 @@ view onClickMsg card =
                 ]
                 [ div
                     [ style "transform" "rotate(180deg)"
+                    , style "position" "absolute"
+                    , style "bottom" "0"
                     ]
-                    [ text (card |> toValueString)
-                    , br [] []
-                    , card |> toSuitView
+                    [ div []
+                        [ text (card |> toValueString)
+                        ]
+                    , div []
+                        [ card |> toSuitView
+                        ]
                     ]
                 ]
             ]
@@ -265,19 +285,8 @@ view onClickMsg card =
 
 
 toSuitView : Card -> Html msg
-toSuitView (Card suit _) =
-    case suit of
-        Clubs ->
-            span [ style "color" "black" ] [ text "♣" ]
-
-        Diamonds ->
-            span [ style "color" "red" ] [ text "♦" ]
-
-        Hearts ->
-            span [ style "color" "red" ] [ text "♥" ]
-
-        Spades ->
-            span [ style "color" "black" ] [ text "♠" ]
+toSuitView card =
+    span [ style "color" (toColorString card) ] [ text (toSuitString card) ]
 
 
 viewHidden : msg -> Html msg
@@ -312,5 +321,6 @@ commonCardAttributes =
     , style "width" "4rem"
     , style "height" "5.5rem"
     , style "padding" "0.1rem"
+    , style "position" "relative"
     , style "margin" "0.1rem"
     ]
